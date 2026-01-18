@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lf_project/core/widgets/custom_app_bar.dart';
 import 'package:lf_project/core/widgets/search_bar.dart';
 import 'package:lf_project/core/widgets/action_button.dart';
 import 'package:lf_project/core/widgets/stock_alert_card.dart';
-import 'package:lf_project/core/widgets/custom_bottom_nav.dart';
 import 'package:lf_project/core/constants/colors.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -14,13 +14,6 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 0;
-
-
-  void _onSearchChanged(String value) {
-    // TODO: Implement search functionality
-    print('Search: $value');
-  }
 
   void _onActionButtonPressed(String action) {
     // TODO: Navigate to respective screens
@@ -50,20 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Search Bar
-                  CustomSearchBar(
-                    onChanged: _onSearchChanged,
-                  ),
-                  const SizedBox(height: 24),
 
-                  // Action Buttons
-                  ActionButton(
-                    icon: Icons.manage_search,
-                    title: 'Search Parts',
-                    subtitle: 'Browse full catalog',
-                    onPressed: () => _onActionButtonPressed('search'),
-                  ),
-                  const SizedBox(height: 16),
                   ActionButton(
                     icon: Icons.sync_alt,
                     title: 'Add / Remove Stock',
@@ -116,8 +96,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // TODO: Navigate to full alerts view
-                          print('View All tapped');
+                          Get.toNamed('/low-stock-alerts');
                         },
                         child: Text(
                           'View All',

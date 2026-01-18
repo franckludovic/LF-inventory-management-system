@@ -81,4 +81,58 @@ class AppStrings {
   static const String qty01 = '01';
   static const String qty02 = '02';
   static const String qty50m = '50m';
+
+  // Stock Update Screen
+  static const String selectPart = 'Select Part';
+  static const String searchElevatorPart = 'Search elevator part...';
+  static const String currentStock = 'Current Stock:';
+  static const String storageBag = 'Storage Bag';
+  static const String sac1MainInventory = 'Sac 1 - Main Inventory';
+  static const String sac2ServiceVan = 'Sac 2 - Service Van';
+  static const String sac3EmergencyKit = 'Sac 3 - Emergency Kit';
+  static const String quantity = 'Quantity';
+  static const String addStock = 'Add Stock';
+  static const String removeStock = 'Remove Stock';
+  static const String optionalNote = 'Optional Note';
+  static const String noteHint = 'E.g. Damaged unit return, site transfer...';
+  static const String confirmChange = 'Confirm Change';
+
+  // Stock Update Success Screen
+  static const String stockUpdateSuccess = 'Stock Update Successful';
+  static const String stockUpdatedMessage = 'Your stock has been updated successfully.';
+  static const String backToInventory = 'Back to Inventory';
+
+  // Generate Report Screen
+  static const String generateReport = 'Generate Report';
+  static const String reportType = 'Report Type';
+  static const String weeklyStockActivityReport = 'Weekly Stock Activity Report';
+  static const String monthlySummary = 'Monthly Summary';
+  static const String technicianUsageReport = 'Technician Usage Report';
+  static const String lowStockAlerts = 'Low Stock Alerts';
+  static const String dateRange = 'Date Range';
+  static const String startDate = 'Start Date';
+  static const String endDate = 'End Date';
+  static const String filtersOptional = 'Filters (Optional)';
+  static const String partName = 'Part Name';
+  static const String technicianName = 'Technician Name';
+  static const String generateReportButton = 'Generate Report';
+  static const String reportDescription = 'A summary of all elevator spare parts movement for the selected period.';
+
+  // Report Details Screen
+  static const String reportPeriod = 'Report Period';
+  static const String totalAdditions = 'Total Additions';
+  static const String totalRemovals = 'Total Removals';
+  static const String activityDetails = 'Activity Details';
+  static const String detailedBreakdown = 'Detailed breakdown of all stock movements';
+  static const String date = 'Date';
+  static const String part = 'Part';
+  static const String type = 'Type';
+  static const String qtyShort = 'Qty';
+  static const String by = 'By';
+  static const String added = 'Added';
+  static const String removed = 'Rem.';
+  static const String showingTransactions = 'Showing 5 of 57 transactions';
+  static const String exportPDF = 'Export PDF';
+  static const String exportCSV = 'Export CSV';
+  static const String backToDashboard = 'Back to Dashboard';
 }

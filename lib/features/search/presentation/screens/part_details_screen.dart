@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
-import '../../data/models/part_model.dart';
+import '../../../../core/models/part_model.dart';
 import '../widgets/hero_image_header.dart';
 import '../widgets/headline_content.dart';
 import '../widgets/inventory_stats_widget.dart';

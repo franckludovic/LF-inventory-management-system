@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lf_project/core/constants/strings.dart';
-
 import 'core/theme/app_theme.dart';
-import 'features/auth/bindings/login_binding.dart';
-import 'features/auth/presentation/screens/login_screen.dart';
-import 'core/widgets/navigation_menu.dart';
+import 'routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,19 +23,8 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
 
       // ROUTES
-      initialRoute: '/login',
-      getPages: [
-        GetPage(
-          name: '/login',
-          page: () => const LoginScreen(),
-          binding: LoginBinding(),
-        ),
-
-        GetPage(
-          name: '/home',
-          page: () => const NavigationMenu(),
-        ),
-      ],
+      initialRoute: AppRoutes.login,
+      getPages: AppRoutes.pages,
     );
   }
 }

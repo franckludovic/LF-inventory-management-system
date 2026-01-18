@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
+import 'package:get/get.dart';
+import '../../../Parts/presentation/screens/stock_update_screen.dart';
 
 class PartActionsWidget extends StatelessWidget {
   const PartActionsWidget({super.key});
@@ -18,7 +20,7 @@ class PartActionsWidget extends StatelessWidget {
             height: 56,
             child: ElevatedButton.icon(
               onPressed: () {
-                // TODO: Implement update stock functionality
+                Get.toNamed('/stock-update');
               },
               icon: const Icon(Icons.edit_square),
               label: Text(AppStrings.updateStock),

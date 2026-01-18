@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
-import '../../../../core/constants/strings.dart';
-import '../../data/models/part_model.dart';
+// import '../../../../core/constants/strings.dart';
+import '../../../../core/models/part_model.dart';
 
 class SearchPartCard extends StatelessWidget {
   final PartModel part;
