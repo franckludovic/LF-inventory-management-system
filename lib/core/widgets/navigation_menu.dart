@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../constants/colors.dart';
-// import '../constants/strings.dart';
 import '../controllers/navigation_controller.dart';
+import '../../features/home/presentation/screens/dashboard_screen.dart';
+import '../../features/search/presentation/screens/search_screen.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -12,7 +13,16 @@ class NavigationMenu extends StatelessWidget {
     final NavigationController navController = Get.put(NavigationController());
 
     return Scaffold(
-      body: Obx(() => navController.screens[navController.selectedIndex.value]),
+      body: Obx(() {
+        switch (navController.selectedIndex.value) {
+          case 0:
+            return const DashboardScreen();
+          case 1:
+            return const SearchScreen();
+          default:
+            return const SizedBox();
+        }
+      }),
       bottomNavigationBar: Obx(
         () => NavigationBar(
           selectedIndex: navController.selectedIndex.value,

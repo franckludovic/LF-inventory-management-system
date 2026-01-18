@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
 import '../../../../core/models/part_model.dart';
+import '../../controllers/part_details_controller.dart';
 import '../widgets/hero_image_header.dart';
 import '../widgets/headline_content.dart';
 import '../widgets/inventory_stats_widget.dart';
 import '../widgets/location_breakdown_widget.dart';
 import '../widgets/part_actions_widget.dart';
 
-class PartDetailsScreen extends StatelessWidget {
-  final PartModel part;
-
-  const PartDetailsScreen({
-    super.key,
-    required this.part,
-  });
+class PartDetailsScreen extends GetView<PartDetailsController> {
+  const PartDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +24,7 @@ class PartDetailsScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Get.back(),
         ),
         title: Text(
           AppStrings.partDetails,
@@ -40,9 +37,7 @@ class PartDetailsScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            onPressed: () {
-              // TODO: Implement share functionality
-            },
+            onPressed: controller.sharePart,
           ),
         ],
       ),
@@ -51,24 +46,24 @@ class PartDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Hero Image
-            HeroImageHeader(imageUrl: part.imageUrl),
+            HeroImageHeader(imageUrl: controller.part.imageUrl),
 
             // Headline Content
             HeadlineContent(
-              name: part.name,
-              referenceNumber: part.referenceNumber ?? 'REF-${part.name.replaceAll(' ', '-').toUpperCase()}',
-              brand: part.brand,
+              name: controller.part.name,
+              referenceNumber: controller.part.referenceNumber ?? 'REF-${controller.part.name.replaceAll(' ', '-').toUpperCase()}',
+              brand: controller.part.brand,
             ),
 
             // Inventory Stats
             InventoryStatsWidget(
-              quantity: part.quantity.replaceAll('Qty: ', ''),
-              isLowStock: part.isLowStock,
+              quantity: controller.part.quantity.replaceAll('Qty: ', ''),
+              isLowStock: controller.part.isLowStock,
             ),
 
             // Location Breakdown
-            if (part.locations != null && part.locations!.isNotEmpty)
-              LocationBreakdownWidget(locations: part.locations!),
+            if (controller.part.locations != null && controller.part.locations!.isNotEmpty)
+              LocationBreakdownWidget(locations: controller.part.locations!),
 
             // Technical Specs
             Container(

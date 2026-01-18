@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../controllers/stock_update_controller.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/widgets/custom_search_field.dart';
 import '../../../../core/widgets/custom_dropdown.dart';
@@ -7,38 +8,8 @@ import '../../../../core/widgets/quantity_selector.dart';
 import '../../../../core/widgets/action_toggle.dart';
 import '../../../../core/widgets/custom_text_area.dart';
 
-class StockUpdateScreen extends StatefulWidget {
+class StockUpdateScreen extends GetView<StockUpdateController> {
   const StockUpdateScreen({super.key});
-
-  @override
-  State<StockUpdateScreen> createState() => _StockUpdateScreenState();
-}
-
-class _StockUpdateScreenState extends State<StockUpdateScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
-  String? _selectedBag;
-  int _quantity = 1;
-  bool _isAddStock = true;
-  bool _showAddLocation = false;
-  String? _selectedAdditionalLocation;
-
-  final List<String> _bagOptions = [
-    'Sac 1 - Main Inventory',
-    'Sac 2 - Service Van',
-    'Sac 3 - Emergency Kit',
-  ];
-
-  final List<String> _availableLocations = [
-    'Sac 3',
-    'Sac 6',
-    'Sac 1',
-    'Bin 12A',
-    'Service Truck A',
-    'Sac 9',
-    'HQ Depot',
-    'External Warehouse',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -89,34 +60,26 @@ class _StockUpdateScreenState extends State<StockUpdateScreen> {
                     label: 'SELECT PART',
                     hint: 'Search elevator part...',
                     currentStock: 'Current Stock: 14 units',
-                    controller: _searchController,
+                    controller: controller.searchController,
                   ),
                   const SizedBox(height: 24),
 
                   // Select Bag Dropdown
-                  CustomDropdown(
+                  Obx(() => CustomDropdown(
                     label: 'STORAGE BAG',
-                    value: _selectedBag,
-                    items: _bagOptions,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedBag = value;
-                      });
-                    },
-                  ),
+                    value: controller.selectedBag.value.isEmpty ? null : controller.selectedBag.value,
+                    items: controller.bagOptions,
+                    onChanged: controller.selectBag,
+                  )),
                   const SizedBox(height: 16),
 
                   // Add Location Button
-                  SizedBox(
+                  Obx(() => SizedBox(
                     width: double.infinity,
                     child: OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _showAddLocation = !_showAddLocation;
-                        });
-                      },
+                      onPressed: controller.toggleAddLocation,
                       icon: Icon(
-                        _showAddLocation ? Icons.remove : Icons.add,
+                        controller.showAddLocation.value ? Icons.remove : Icons.add,
                         color: AppColors.primary,
                       ),
                       label: Text(
@@ -134,59 +97,43 @@ class _StockUpdateScreenState extends State<StockUpdateScreen> {
                         ),
                       ),
                     ),
-                  ),
+                  )),
 
                   // Additional Location Dropdown (shown when Add Location is clicked)
-                  if (_showAddLocation) ...[
-                    const SizedBox(height: 16),
-                    CustomDropdown(
-                      label: 'ADDITIONAL LOCATION',
-                      value: _selectedAdditionalLocation,
-                      items: _availableLocations,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedAdditionalLocation = value;
-                        });
-                      },
-                    ),
-                  ],
+                  Obx(() => controller.showAddLocation.value ? Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      CustomDropdown(
+                        label: 'ADDITIONAL LOCATION',
+                        value: controller.selectedAdditionalLocation.value.isEmpty ? null : controller.selectedAdditionalLocation.value,
+                        items: controller.availableLocations,
+                        onChanged: controller.selectAdditionalLocation,
+                      ),
+                    ],
+                  ) : const SizedBox()),
                   const SizedBox(height: 24),
 
                   // Quantity Field
-                  QuantitySelector(
+                  Obx(() => QuantitySelector(
                     label: 'QUANTITY',
-                    quantity: _quantity,
-                    onIncrement: () {
-                      setState(() {
-                        _quantity++;
-                      });
-                    },
-                    onDecrement: () {
-                      if (_quantity > 1) {
-                        setState(() {
-                          _quantity--;
-                        });
-                      }
-                    },
-                  ),
+                    quantity: controller.quantity.value,
+                    onIncrement: controller.incrementQuantity,
+                    onDecrement: controller.decrementQuantity,
+                  )),
                   const SizedBox(height: 32),
 
                   // Action Toggle (Add / Remove)
-                  ActionToggle(
-                    isAddStock: _isAddStock,
-                    onToggle: (isAdd) {
-                      setState(() {
-                        _isAddStock = isAdd;
-                      });
-                    },
-                  ),
+                  Obx(() => ActionToggle(
+                    isAddStock: controller.isAddStock.value,
+                    onToggle: controller.toggleAction,
+                  )),
                   const SizedBox(height: 24),
 
                   // Optional Note
                   CustomTextArea(
                     label: 'OPTIONAL NOTE',
                     hint: 'E.g. Damaged unit return, site transfer...',
-                    controller: _noteController,
+                    controller: controller.noteController,
                   ),
                   const SizedBox(height: 80), // Space for bottom button
                 ],
@@ -206,10 +153,7 @@ class _StockUpdateScreenState extends State<StockUpdateScreen> {
               ),
             ),
             child: ElevatedButton(
-              onPressed: () {
-                // Navigate to success screen
-                Get.toNamed('/stock-update-success');
-              },
+              onPressed: controller.confirmChange,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,

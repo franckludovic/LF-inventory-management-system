@@ -1,39 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lf_project/core/widgets/custom_app_bar.dart';
-import 'package:lf_project/core/widgets/search_bar.dart';
 import 'package:lf_project/core/widgets/action_button.dart';
 import 'package:lf_project/core/widgets/stock_alert_card.dart';
 import 'package:lf_project/core/constants/colors.dart';
+import '../../controllers/dashboard_controller.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends GetView<DashboardController> {
   const DashboardScreen({super.key});
-
-  @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends State<DashboardScreen> {
-
-  void _onActionButtonPressed(String action) {
-    // TODO: Navigate to respective screens
-    print('Action: $action');
-  }
-
-  void _onRestockPressed(String item) {
-    // TODO: Implement restock functionality
-    print('Restock: $item');
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Spare Parts Inventory',
-        onProfileTap: () {
-          // TODO: Navigate to profile
-          print('Profile tapped');
-        },
+        onProfileTap: controller.onProfileTap,
       ),
       body: Column(
         children: [
@@ -48,14 +29,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     icon: Icons.sync_alt,
                     title: 'Add / Remove Stock',
                     subtitle: 'Update current levels',
-                    onPressed: () => _onActionButtonPressed('stock'),
+                    onPressed: () => controller.onActionButtonPressed('stock'),
                   ),
                   const SizedBox(height: 16),
                   ActionButton(
                     icon: Icons.photo_camera,
                     title: 'Capture Image',
                     subtitle: 'Scan barcode or visual ID',
-                    onPressed: () => _onActionButtonPressed('capture'),
+                    onPressed: () => controller.onActionButtonPressed('capture'),
                   ),
                   const SizedBox(height: 32),
 
@@ -95,9 +76,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
                       TextButton(
-                        onPressed: () {
-                          Get.toNamed('/low-stock-alerts');
-                        },
+                        onPressed: controller.navigateToLowStockAlerts,
                         child: Text(
                           'View All',
                           style: TextStyle(
@@ -118,7 +97,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     status: 'CRITICAL STOCK',
                     statusColor: AppColors.error,
                     statusIcon: Icons.warning,
-                    onRestockPressed: () => _onRestockPressed('Traction Cable - 12mm'),
+                    onRestockPressed: () => controller.onRestockPressed('Traction Cable - 12mm'),
                   ),
                   const SizedBox(height: 16),
                   StockAlertCard(
@@ -127,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     status: 'LOW STOCK',
                     statusColor: AppColors.warning,
                     statusIcon: Icons.inventory_2,
-                    onRestockPressed: () => _onRestockPressed('Door Interlock Switch'),
+                    onRestockPressed: () => controller.onRestockPressed('Door Interlock Switch'),
                   ),
                 ],
               ),

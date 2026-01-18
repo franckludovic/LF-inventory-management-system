@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lf_project/features/Parts/controllers/report_details_controller.dart';
+import 'package:lf_project/features/reports/controllers/report_details_controller.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../core/widgets/report_summary_card.dart';
 import '../../../../core/widgets/activity_list_item.dart';
-// import '../../../Parts/controllers/report_details_controller.dart';
 
 class ReportDetailsScreen extends GetView<ReportDetailsController> {
   const ReportDetailsScreen({super.key});
