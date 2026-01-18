@@ -4,6 +4,8 @@ import '../constants/colors.dart';
 import '../controllers/navigation_controller.dart';
 import '../../features/home/presentation/screens/dashboard_screen.dart';
 import '../../features/search/presentation/screens/search_screen.dart';
+import '../../features/reports/presentation/screens/generate_report_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -19,6 +21,10 @@ class NavigationMenu extends StatelessWidget {
             return const DashboardScreen();
           case 1:
             return const SearchScreen();
+          case 2:
+            return const GenerateReportScreen();
+          case 3:
+            return const ProfileScreen();
           default:
             return const SizedBox();
         }

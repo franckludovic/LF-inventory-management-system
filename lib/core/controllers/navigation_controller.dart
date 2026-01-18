@@ -5,20 +5,5 @@ class NavigationController extends GetxController {
 
   void changeTab(int index) {
     selectedIndex.value = index;
-
-    switch (index) {
-      case 0:
-        Get.toNamed('/dashboard');
-        break;
-      case 1:
-        Get.toNamed('/search');
-        break;
-      case 2:
-        Get.toNamed('/generate-report');
-        break;
-      case 3:
-        Get.toNamed('/profile');
-        break;
-    }
   }
 }
