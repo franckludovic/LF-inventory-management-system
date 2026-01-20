@@ -3,8 +3,11 @@ import 'package:get/get.dart';
 import 'package:lf_project/core/constants/strings.dart';
 import 'core/theme/app_theme.dart';
 import 'routes/app_routes.dart';
+import 'core/controllers/user_controller.dart';
 
 void main() {
+  // Initialize controllers
+  Get.put<UserController>(UserController(), permanent: true);
   runApp(const MyApp());
 }
 

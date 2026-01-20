@@ -1,46 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lf_project/core/widgets/search_bar.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
-import '../../../../core/widgets/search_bar.dart';
-import '../widgets/search_part_card.dart';
+import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/part_card_widget.dart';
+import '../../controllers/parts_management_controller.dart';
 import '../../../../core/controllers/custom_search_controller.dart';
 
-class SearchScreen extends GetView<CustomSearchController> {
-  const SearchScreen({super.key});
+class PartsManagementScreen extends GetView<PartsManagementController> {
+  const PartsManagementScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final searchcontroller = Get.find<CustomSearchController>();
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
-      appBar: AppBar(
-        backgroundColor: isDark ? AppColors.backgroundDark.withOpacity(0.95) : AppColors.backgroundLight.withOpacity(0.95),
-        elevation: 0,
-        title: Text(
-          AppStrings.searchSpareParts,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.tune,
-              color: AppColors.primary,
-            ),
-            onPressed: () {
-              // TODO: Implement filter functionality
-            },
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.primary.withOpacity(0.1),
-            ),
-          ),
-        ],
+      appBar: CustomAppBar(
+        title: AppStrings.partsManagement,
+        showBackButton: false,
       ),
       body: Column(
         children: [
@@ -50,26 +30,27 @@ class SearchScreen extends GetView<CustomSearchController> {
             child: CustomSearchBar(
               controller: controller.searchController,
               hintText: AppStrings.searchByPartNameOrSku,
-              onChanged: (value) => controller.filterParts(),
+              onChanged: (value) => controller.onSearchChanged(value),
             ),
           ),
 
-          // Filter Dropdowns
+                    // Filter Dropdowns
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
+              mainAxisSize: MainAxisSize.max,
               children: [
                 // Status Filter
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: Obx(() => DropdownButtonFormField<String>(
-                      value: controller.selectedStatus.value,
+                      value: searchcontroller.selectedStatus.value,
                       onChanged: (String? newValue) {
-                        controller.selectedStatus.value = newValue!;
-                        controller.filterParts();
+                        searchcontroller.selectedStatus.value = newValue!;
+                        searchcontroller.filterParts();
                       },
-                      items: controller.statusOptions.map<DropdownMenuItem<String>>((String value) {
+                      items: searchcontroller.statusOptions.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -88,12 +69,12 @@ class SearchScreen extends GetView<CustomSearchController> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Obx(() => DropdownButtonFormField<String>(
-                      value: controller.selectedCompany.value,
+                      value: searchcontroller.selectedCompany.value,
                       onChanged: (String? newValue) {
-                        controller.selectedCompany.value = newValue!;
-                        controller.filterParts();
+                        searchcontroller.selectedCompany.value = newValue!;
+                        searchcontroller.filterParts();
                       },
-                      items: controller.companyOptions.map<DropdownMenuItem<String>>((String value) {
+                      items: searchcontroller.companyOptions.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -112,12 +93,12 @@ class SearchScreen extends GetView<CustomSearchController> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Obx(() => DropdownButtonFormField<String>(
-                      value: controller.selectedLocation.value,
+                      value: searchcontroller.selectedLocation.value,
                       onChanged: (String? newValue) {
-                        controller.selectedLocation.value = newValue!;
-                        controller.filterParts();
+                        searchcontroller.selectedLocation.value = newValue!;
+                        searchcontroller.filterParts();
                       },
-                      items: controller.locationOptions.map<DropdownMenuItem<String>>((String value) {
+                      items: searchcontroller.locationOptions.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -135,45 +116,56 @@ class SearchScreen extends GetView<CustomSearchController> {
             ),
           ),
 
-          // Result Count Bar
-          Obx(() => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.cardBackgroundDark.withOpacity(0.5) : AppColors.cardBackgroundLight.withOpacity(0.5),
-              border: Border.symmetric(
-                horizontal: BorderSide(
-                  color: isDark ? AppColors.borderDark : AppColors.borderLight,
-                  width: 1,
-                ),
-              ),
-            ),
-            child: Text(
-              'Showing ${controller.filteredParts.length} Results',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                letterSpacing: 1.2,
-              ).copyWith(
-                textBaseline: TextBaseline.alphabetic,
-              ),
-            ),
-          )),
-
           // Parts List
           Expanded(
-            child: Obx(() => ListView.builder(
-              itemCount: controller.filteredParts.length,
-              itemBuilder: (context, index) {
-                final part = controller.filteredParts[index];
-                return SearchPartCard(
-                  part: part,
-                  onTap: () => controller.navigateToPartDetails(part),
+            child: Obx(() {
+              if (controller.filteredParts.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.inventory_2_outlined,
+                        size: 64,
+                        color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No parts found',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                        ),
+                      ),
+                    ],
+                  ),
                 );
-              },
-            )),
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: controller.filteredParts.length,
+                itemBuilder: (context, index) {
+                  final part = controller.filteredParts[index];
+                  return PartCardWidget(
+                    part: part,
+                    onEditPressed: () => controller.onEditPressed(part),
+                    onDeletePressed: () => controller.onDeletePressed(part),
+                  );
+                },
+              );
+            }),
           ),
         ],
+      ),
+
+      // Floating Action Button
+      floatingActionButton: FloatingActionButton(
+        onPressed: controller.onAddPressed,
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
+        elevation: 6,
+        child: const Icon(Icons.add, size: 28),
       ),
     );
   }

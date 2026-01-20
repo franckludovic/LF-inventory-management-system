@@ -16,14 +16,12 @@ class LowStockAlertsScreen extends GetView<LowStockAlertsController> {
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
+      appBar: CustomAppBar(
+        title: AppStrings.lowStockAlerts,
+        showBackButton: true,
+      ),
       body: Column(
         children: [
-          // Custom App Bar
-          CustomAppBar(
-            title: AppStrings.lowStockAlerts,
-            showBackButton: true,
-          ),
-
           // Filter Chips
           StockFilterChips(onFilterSelected: controller.onFilterSelected),
 

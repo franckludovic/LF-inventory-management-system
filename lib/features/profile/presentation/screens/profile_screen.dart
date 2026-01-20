@@ -16,7 +16,7 @@ class ProfileScreen extends GetView<ProfileController> {
     return Scaffold(
       appBar: CustomAppBar(
         title: AppStrings.profile,
-        showBackButton: true,
+        showBackButton: false,
       ),
       body: SingleChildScrollView(
         child: Column(

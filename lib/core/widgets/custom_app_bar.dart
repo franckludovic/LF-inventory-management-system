@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../constants/colors.dart';
+import '../../routes/app_routes.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -76,7 +78,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? null
           : [
               IconButton(
-                onPressed: onProfileTap,
+                onPressed: onProfileTap ?? () => Get.toNamed(AppRoutes.profile),
                 icon: Icon(
                   Icons.account_circle,
                   color: Theme.of(context).brightness == Brightness.dark

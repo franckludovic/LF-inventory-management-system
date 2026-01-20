@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lf_project/core/widgets/custom_app_bar.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
 import '../../../../core/theme/app_theme.dart';
@@ -17,39 +18,16 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      appBar: CustomAppBar(
+        title: AppStrings.generateReport,
+        onProfileTap: () {}, 
+        showBackButton: false,
+      ),
       backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
       body: SafeArea(
         child: Column(
           children: [
-            // Top AppBar
-            Container(
-              padding: const EdgeInsets.only(top: 24, left: 16, right: 16, bottom: 8),
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.cardBackgroundDark.withOpacity(0.95) : AppColors.cardBackgroundLight.withOpacity(0.95),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () => Get.back(),
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                  ),
-                  Expanded(
-                    child: Text(
-                      AppStrings.generateReport,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(width: 48),
-                ],
-              ),
-            ),
-
+            
             // Main Content
             Expanded(
               child: SingleChildScrollView(

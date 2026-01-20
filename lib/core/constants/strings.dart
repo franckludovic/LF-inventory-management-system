@@ -1,6 +1,6 @@
 class AppStrings {
   // App Title
-  static const String appTitle = 'LF';
+  static const String appTitle = 'LFS';
   static const String appSubTitle = 'Inventory Management System';
 
 
@@ -135,4 +135,70 @@ class AppStrings {
   static const String exportPDF = 'Export PDF';
   static const String exportCSV = 'Export CSV';
   static const String backToDashboard = 'Back to Dashboard';
+
+  // Parts Management Screen
+  static const String partsManagement = 'Parts Management';
+
+  // Add Part Screen
+  static const String addNewSparePart = 'Add New Spare Part';
+  static const String partNameLabel = 'Part Name';
+  static const String partNameHint = 'e.g. Elevator Door Roller';
+  static const String designationReference = 'Designation / Reference';
+  static const String designationHint = 'e.g. REF-2024-X1';
+  static const String manufacturer = 'Manufacturer';
+  static const String manufacturerHint = 'e.g. Manufacturer Name';
+  static const String descriptionOptional = 'Description (Optional)';
+  static const String descriptionHint = 'Add specific details or usage notes...';
+  static const String initialQuantity = 'Initial Quantity';
+  static const String bagLocation = 'Bag Location';
+  static const String selectLocation = 'Select Location';
+  static const String mainWarehouseA1 = 'Main Warehouse - A1';
+  static const String serviceVanV04 = 'Service Van - V04';
+  static const String regionalHubWest = 'Regional Hub - West';
+  static const String partPhoto = 'Part Photo';
+  static const String captureOrUploadImage = 'Capture or Upload Image';
+  static const String maxSize5MB = 'Max size: 5MB';
+  static const String upload = 'Upload';
+  static const String camera = 'Camera';
+  static const String savePart = 'Save Part';
+
+  // User Management Screen
+  static const String userManagement = 'User Management';
+  static const String searchTechnicians = 'Search technicians...';
+  static const String activeTechnicians = 'Active Technicians';
+  static const String blockedTechnicians = 'Blocked Technicians';
+  static const String block = 'Block';
+  static const String unblock = 'Unblock';
+  static const String addNewTechnician = 'Add New Technician';
+  static const String seniorTechnician = 'Senior Technician';
+  static const String technician = 'Technician';
+  static const String maintenanceSpecialist = 'Maintenance Specialist';
+  static const String active = 'Active';
+  static const String blocked = 'Blocked';
+
+  // Add User Screen
+  static const String addTechnician = 'Add Technician';
+  static const String fullName = 'Full Name';
+  static const String enterTechniciansFullName = 'Enter technician\'s full name';
+  static const String usernameLabel = 'Username';
+  static const String enterUsername = 'e.g. jdoe_tech';
+  static const String temporaryPassword = 'Temporary Password';
+  static const String setTemporaryPassword = 'Set temporary password';
+  static const String passwordHint = 'The user will be prompted to change this on first login.';
+  static const String role = 'Role';
+  static const String technicianRole = 'Technician';
+  static const String saveTechnician = 'Save Technician';
+  static const String cancel = 'Cancel';
+
+  // Location Management
+  static const String locationManagement = 'Location Management';
+  static const String searchLocations = 'Search locations...';
+  static const String noLocationsFound = 'No locations found';
+  static const String addNewLocation = 'Add New Location';
+  static const String editLocation = 'Edit Location';
+  static const String locationName = 'Location Name';
+  static const String enterLocationName = 'Enter location name';
+  static const String maxLocationQuantity = 'Max Location Quantity';
+  static const String enterMaxQuantity = 'Enter max quantity';
+  static const String saveLocation = 'Save Location';
 }

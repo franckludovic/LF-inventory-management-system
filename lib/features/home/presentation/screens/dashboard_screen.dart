@@ -15,6 +15,7 @@ class DashboardScreen extends GetView<DashboardController> {
       appBar: CustomAppBar(
         title: 'Spare Parts Inventory',
         onProfileTap: controller.onProfileTap,
+        showBackButton: false,
       ),
       body: Column(
         children: [

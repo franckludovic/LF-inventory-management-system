@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lf_project/core/constants/strings.dart';
-import '../controllers/login_controller.dart';
+import '../../controllers/login_controller.dart';
 import '../../../../core/widgets/brand_header.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/login_button.dart';
