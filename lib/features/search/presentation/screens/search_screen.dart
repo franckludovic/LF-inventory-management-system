@@ -62,7 +62,7 @@ class SearchScreen extends GetView<CustomSearchController> {
                 // Status Filter
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: 4),
                     child: Obx(() => DropdownButtonFormField<String>(
                       value: controller.selectedStatus.value,
                       onChanged: (String? newValue) {
@@ -72,21 +72,23 @@ class SearchScreen extends GetView<CustomSearchController> {
                       items: controller.statusOptions.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value, overflow: TextOverflow.ellipsis),
                         );
                       }).toList(),
                       decoration: InputDecoration(
                         labelText: 'Status',
                         border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        isDense: true,
                       ),
+                      isExpanded: true,
                     )),
                   ),
                 ),
                 // Company Filter
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: Obx(() => DropdownButtonFormField<String>(
                       value: controller.selectedCompany.value,
                       onChanged: (String? newValue) {
@@ -96,21 +98,23 @@ class SearchScreen extends GetView<CustomSearchController> {
                       items: controller.companyOptions.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value, overflow: TextOverflow.ellipsis),
                         );
                       }).toList(),
                       decoration: InputDecoration(
                         labelText: 'Company',
                         border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        isDense: true,
                       ),
+                      isExpanded: true,
                     )),
                   ),
                 ),
                 // Location Filter
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 8),
+                    padding: const EdgeInsets.only(left: 4),
                     child: Obx(() => DropdownButtonFormField<String>(
                       value: controller.selectedLocation.value,
                       onChanged: (String? newValue) {
@@ -120,14 +124,16 @@ class SearchScreen extends GetView<CustomSearchController> {
                       items: controller.locationOptions.map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value, overflow: TextOverflow.ellipsis),
                         );
                       }).toList(),
                       decoration: InputDecoration(
                         labelText: 'Location',
                         border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        isDense: true,
                       ),
+                      isExpanded: true,
                     )),
                   ),
                 ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../constants/colors.dart';
+import '../controllers/user_controller.dart';
 
 class ActivityListItem extends StatelessWidget {
   final String date;
@@ -23,6 +25,7 @@ class ActivityListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isAdded = type == 'Added';
+    final userController = Get.find<UserController>();
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
@@ -115,18 +118,19 @@ class ActivityListItem extends StatelessWidget {
           ),
           const SizedBox(width: 8),
 
-          // By
-          SizedBox(
-            width: 30,
-            child: Text(
-              by,
-              style: TextStyle(
-                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                fontSize: 12,
+          // By - Only show for admins
+          if (userController.isAdmin)
+            SizedBox(
+              width: 30,
+              child: Text(
+                by,
+                style: TextStyle(
+                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.right,
               ),
-              textAlign: TextAlign.right,
             ),
-          ),
         ],
       ),
     );

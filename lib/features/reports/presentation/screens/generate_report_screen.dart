@@ -8,6 +8,7 @@ import '../../../../core/widgets/custom_dropdown.dart';
 import '../../../../core/widgets/custom_date_picker_field.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
+import '../../../../core/controllers/user_controller.dart';
 import '../../controllers/generate_report_controller.dart';
 
 class GenerateReportScreen extends GetView<GenerateReportController> {
@@ -16,11 +17,11 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final userController = Get.find<UserController>();
 
     return Scaffold(
       appBar: CustomAppBar(
-        title: AppStrings.generateReport,
-        onProfileTap: () {}, 
+        title: AppStrings.generateReport, 
         showBackButton: false,
       ),
       backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
@@ -143,12 +144,13 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                       onChanged: controller.updateSelectedPartName,
                     )),
                     const SizedBox(height: 16),
-                    // Technician Name Filter
-                    Obx(() => CustomTextField(
-                      label: AppStrings.technicianName,
-                      hint: 'e.g. John Doe',
-                      controller: controller.technicianNameController.value,
-                    )),
+                    // Technician Name Filter - Only show for admins
+                    if (userController.isAdmin)
+                      Obx(() => CustomTextField(
+                        label: AppStrings.technicianName,
+                        hint: 'e.g. John Doe',
+                        controller: controller.technicianNameController.value,
+                      )),
 
                     const SizedBox(height: 32),
 

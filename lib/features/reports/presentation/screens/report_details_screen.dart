@@ -7,6 +7,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../core/widgets/report_summary_card.dart';
 import '../../../../core/widgets/activity_list_item.dart';
+import '../../../../core/controllers/user_controller.dart';
 
 class ReportDetailsScreen extends GetView<ReportDetailsController> {
   const ReportDetailsScreen({super.key});
@@ -14,6 +15,7 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final userController = Get.find<UserController>();
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.backgroundDark : AppColors.backgroundLight,
@@ -202,19 +204,20 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                SizedBox(
-                                  width: 30,
-                                  child: Text(
-                                    AppStrings.by,
-                                    style: TextStyle(
-                                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1,
+                                if (userController.isAdmin)
+                                  SizedBox(
+                                    width: 30,
+                                    child: Text(
+                                      AppStrings.by,
+                                      style: TextStyle(
+                                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1,
+                                      ),
+                                      textAlign: TextAlign.right,
                                     ),
-                                    textAlign: TextAlign.right,
                                   ),
-                                ),
                               ],
                             ),
                           ),

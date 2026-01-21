@@ -34,82 +34,96 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
             ),
           ),
 
-                    // Filter Dropdowns
+          // Filter Chips
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
-              mainAxisSize: MainAxisSize.max,
               children: [
                 // Status Filter
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Obx(() => DropdownButtonFormField<String>(
-                      value: searchcontroller.selectedStatus.value,
-                      onChanged: (String? newValue) {
-                        searchcontroller.selectedStatus.value = newValue!;
-                        searchcontroller.filterParts();
-                      },
-                      items: searchcontroller.statusOptions.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      decoration: InputDecoration(
-                        labelText: 'Status',
-                        border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                    )),
+                    padding: const EdgeInsets.only(right: 4),
+                    child: SizedBox(
+                      height: 48,
+                      child: Obx(() => DropdownButtonFormField<String>(
+                        value: searchcontroller.selectedStatus.value,
+                        onChanged: (String? newValue) {
+                          searchcontroller.selectedStatus.value = newValue!;
+                          searchcontroller.filterParts();
+                        },
+                        items: searchcontroller.statusOptions.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value, overflow: TextOverflow.ellipsis),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Status',
+                          border: OutlineInputBorder(),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          isDense: true,
+                        ),
+                        isExpanded: true,
+                      )),
+                    ),
                   ),
                 ),
                 // Company Filter
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Obx(() => DropdownButtonFormField<String>(
-                      value: searchcontroller.selectedCompany.value,
-                      onChanged: (String? newValue) {
-                        searchcontroller.selectedCompany.value = newValue!;
-                        searchcontroller.filterParts();
-                      },
-                      items: searchcontroller.companyOptions.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      decoration: InputDecoration(
-                        labelText: 'Company',
-                        border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                    )),
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: SizedBox(
+                      height: 48,
+                      child: Obx(() => DropdownButtonFormField<String>(
+                        value: searchcontroller.selectedCompany.value,
+                        onChanged: (String? newValue) {
+                          searchcontroller.selectedCompany.value = newValue!;
+                          searchcontroller.filterParts();
+                        },
+                        items: searchcontroller.companyOptions.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value, overflow: TextOverflow.ellipsis),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Company',
+                          border: OutlineInputBorder(),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          isDense: true,
+                        ),
+                        isExpanded: true,
+                      )),
+                    ),
                   ),
                 ),
                 // Location Filter
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Obx(() => DropdownButtonFormField<String>(
-                      value: searchcontroller.selectedLocation.value,
-                      onChanged: (String? newValue) {
-                        searchcontroller.selectedLocation.value = newValue!;
-                        searchcontroller.filterParts();
-                      },
-                      items: searchcontroller.locationOptions.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      decoration: InputDecoration(
-                        labelText: 'Location',
-                        border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      ),
-                    )),
+                    padding: const EdgeInsets.only(left: 4),
+                    child: SizedBox(
+                      height: 48,
+                      child: Obx(() => DropdownButtonFormField<String>(
+                        value: searchcontroller.selectedLocation.value,
+                        onChanged: (String? newValue) {
+                          searchcontroller.selectedLocation.value = newValue!;
+                          searchcontroller.filterParts();
+                        },
+                        items: searchcontroller.locationOptions.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value, overflow: TextOverflow.ellipsis),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          labelText: 'Location',
+                          border: OutlineInputBorder(),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                          isDense: true,
+                        ),
+                        isExpanded: true,
+                      )),
+                    ),
                   ),
                 ),
               ],
