@@ -91,24 +91,37 @@ class DashboardScreen extends GetView<DashboardController> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Stock Alert Cards
-                  StockAlertCard(
-                    title: 'Traction Cable - 12mm',
-                    subtitle: 'Only 2 units remaining',
-                    status: 'CRITICAL STOCK',
-                    statusColor: AppColors.error,
-                    statusIcon: Icons.warning,
-                    onRestockPressed: () => controller.onRestockPressed('Traction Cable - 12mm'),
-                  ),
-                  const SizedBox(height: 16),
-                  StockAlertCard(
-                    title: 'Door Interlock Switch',
-                    subtitle: 'Only 5 units remaining',
-                    status: 'LOW STOCK',
-                    statusColor: AppColors.warning,
-                    statusIcon: Icons.inventory_2,
-                    onRestockPressed: () => controller.onRestockPressed('Door Interlock Switch'),
-                  ),
+                  // Stock Alert Cards - Dynamic from backend
+                  Obx(() {
+                    if (controller.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (controller.lowStockParts.isEmpty) {
+                      return const Text('No low stock alerts');
+                    }
+
+                    return Column(
+                      children: controller.lowStockParts.take(2).map((part) {
+                        final qty = int.tryParse(part.quantity.toString()) ?? 0;
+                        final isCritical = qty <= 2;
+
+                        return Column(
+                          children: [
+                            StockAlertCard(
+                              title: part.name,
+                              subtitle: 'Only $qty units remaining',
+                              status: isCritical ? 'CRITICAL STOCK' : 'LOW STOCK',
+                              statusColor: isCritical ? AppColors.error : AppColors.warning,
+                              statusIcon: isCritical ? Icons.warning : Icons.inventory_2,
+                              onRestockPressed: () => controller.onRestockPressed(part),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        );
+                      }).toList(),
+                    );
+                  }),
                 ],
               ),
             ),

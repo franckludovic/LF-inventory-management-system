@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/strings.dart';
 import '../../../core/models/location_model.dart';
+import '../services/location_service.dart';
 
 class AddLocationController extends GetxController {
   // Form controllers
@@ -10,12 +11,14 @@ class AddLocationController extends GetxController {
 
   // Observable variables for form validation
   var isFormValid = false.obs;
+  var isLoading = false.obs;
 
   // Form validation
   var nameError = ''.obs;
   var maxQuantityError = ''.obs;
 
   LocationModel? editingLocation;
+  final LocationService _locationService = LocationService();
 
   @override
   void onInit() {
@@ -69,7 +72,7 @@ class AddLocationController extends GetxController {
     isFormValid.value = nameError.value.isEmpty && maxQuantityError.value.isEmpty && nameController.text.trim().isNotEmpty;
   }
 
-  void onSaveLocation() {
+  Future<void> onSaveLocation() async {
     if (!isFormValid.value) {
       Get.snackbar(
         'Validation Error',
@@ -81,26 +84,50 @@ class AddLocationController extends GetxController {
       return;
     }
 
-    final maxQty = maxQuantityController.text.isNotEmpty ? int.parse(maxQuantityController.text) : null;
+    isLoading.value = true;
 
-    final location = LocationModel(
-      name: nameController.text.trim(),
-      maxQuantity: maxQty,
-      totalQuantity: editingLocation?.totalQuantity ?? 0,
-    );
+    try {
+      final maxQty = maxQuantityController.text.isNotEmpty ? int.parse(maxQuantityController.text) : null;
 
-    // TODO: Call API to save location
-    // For now, just show success message and navigate back
-    Get.snackbar(
-      'Success',
-      editingLocation != null ? 'Location updated successfully!' : 'Location added successfully!',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
+      Map<String, dynamic> result;
+      if (editingLocation != null) {
+        // Update existing location
+        result = await _locationService.updateLocation(
+          locationId: editingLocation!.id ?? '', // Assuming LocationModel has id field
+          name: nameController.text.trim(),
+          maxQuantity: maxQty,
+        );
+      } else {
+        // Create new location
+        result = await _locationService.createLocation(
+          name: nameController.text.trim(),
+          maxQuantity: maxQty ?? 0,
+        );
+      }
 
-    // Navigate back with result
-    Get.back(result: location);
+      final location = LocationModel.fromMap(result);
+
+      Get.snackbar(
+        'Success',
+        editingLocation != null ? 'Location updated successfully!' : 'Location added successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      // Navigate back with result
+      Get.back(result: location);
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to save location: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void onCancel() {

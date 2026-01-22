@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../../routes/app_routes.dart';
+import '../services/user_service.dart';
 
 class UserManagementController extends GetxController {
   // Observable list of technicians
@@ -12,47 +13,47 @@ class UserManagementController extends GetxController {
   // Filtered technicians based on search
   var filteredTechnicians = <Map<String, dynamic>>[].obs;
 
+  // Loading state
+  var isLoading = false.obs;
+
+  final UserService _userService = UserService();
+
   @override
   void onInit() {
     super.onInit();
-    // Initialize with sample data
+    // Load users from backend
     loadTechnicians();
     // Listen to search query changes
     ever(searchQuery, (_) => filterTechnicians());
   }
 
-  void loadTechnicians() {
-    technicians.assignAll([
-      {
-        'id': 1,
-        'name': 'John Doe',
-        'role': 'Senior Technician',
-        'status': 'active',
-        'avatar': 'https://lh3.googleusercontent.com/aida-public/AB6AXuDZrZ3jhuXPH1_m2DVKFCF2lO3a4oUA-B7VQfp_psxcLyFYJsP6nLy7EigzNvLjAQeVUOAjoD-OSKH6V-2p18oBanYqxpqY7pL5JKZjsYfFkUJAvPPwOEfOzE5CsukgGOSnr4UCVMWLtvn-X1fcL2p9IwhfYMYPaTsK_F-82YBUVXXy5LHc4jKbHO5SeeiZA5xJ7VbahOHSVIl-ztLgPfPuYVlGb2igrO_7IQyTqgR95_JId4ycVivGBrOy6Q2iBNSNu8KEq0KtlYb5',
-      },
-      {
-        'id': 2,
-        'name': 'Sarah Smith',
-        'role': 'Technician',
-        'status': 'active',
-        'avatar': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCF-3zZZq14AgCEVYA9viKDo0gr_sxQd4ImBSFfyPVrbZ8cAkUt6MvhGdSdfeK_Xy23v_8m-HVMu1dl_IaM0mNN6vxtU45aX92uP9eTiGYJiVis-w4MfdACxbCSE0FqW7GrHwpVeBxYrYnOndUlsBAxJG-I7KLE3rWJ2QuY8HOvR-zgzy_4luxUCH9ckWVmTLOhYuCU-s2B9nbBPnZnaTSgEl0BH1l-73II820si-n5H6AJdnf5uO1oHcoi_VtwH8Ng-pOtEIbd8UZJ',
-      },
-      {
-        'id': 3,
-        'name': 'Michael Chen',
-        'role': 'Maintenance Specialist',
-        'status': 'active',
-        'avatar': 'https://lh3.googleusercontent.com/aida-public/AB6AXuAbeBeU65KcY6MxPUZHQCKygtPAuO5H68igOb2cTGS3C4oAKE2yY4CCGo7e9I7QH-a10GtuPVtcKxjWgYV6MyOeDFfQseBHSrQxF9WUG9fY_LpeTstpKhoYJtf2sjJek9ebNhgItFs6znPJvYAIeWwXV2Pko3p9x3qQ5im-zd4pLJWrAool2K9cU59VjYexh2ekouH_v-bLB_yvuMMdkjRNXrF11aXjSpP2mLbkbm2oCWNlPRsJ3cUoP4ZVUJqIS77bOCPPACAehfSV',
-      },
-      {
-        'id': 4,
-        'name': 'Robert Wilson',
-        'role': 'Technician',
-        'status': 'blocked',
-        'avatar': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCCoqM4VS32XdtBBpuo7UxjJ03_gSwi4PNANn1AdgK3iew826WvbwBczNgCfD9uxBWdXbYIgnL1cciuB5YF_4nQLKX4tv-boilJIAUg5YsHBgAKGCSBvZMixVk79BqLzSPdjFfeV4QlrKSI5DrCpCjtiCuDWTn59JBHw8z6IbTpGxJ_7pNW5IB-XBbovVvZEZkceZ305LPlGeu54amU9pPyGpg0PK2d1GZUP9hiMS86f2-9m-ZJOY2-u_lvPbSGKk95xy4lnLN7UGeS',
-      },
-    ]);
-    filterTechnicians();
+  Future<void> loadTechnicians() async {
+    try {
+      isLoading.value = true;
+      final usersData = await _userService.getAllUsers();
+      final techniciansList = usersData.map((user) => {
+        'id': user['id'],
+        'name': user['nom'] ?? '',
+        'role': _getRoleDisplayName(user['role']),
+        'status': 'active', // Default to active, could be derived from other fields
+        'avatar': 'https://via.placeholder.com/150?text=${user['nom']?.substring(0, 1) ?? 'U'}',
+      }).toList();
+      technicians.assignAll(techniciansList);
+      filterTechnicians();
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load users: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  String _getRoleDisplayName(dynamic role) {
+    if (role is List && role.isNotEmpty) {
+      String roleStr = role[0].toString();
+      if (roleStr.contains('ADMIN')) return 'Administrator';
+      if (roleStr.contains('TECHNICIAN')) return 'Technician';
+    }
+    return 'User';
   }
 
   void filterTechnicians() {

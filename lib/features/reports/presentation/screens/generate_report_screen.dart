@@ -110,7 +110,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                         Expanded(
                           child: Obx(() => CustomDatePickerField(
                             label: AppStrings.startDate,
-                            controller: controller.startDateController.value,
+                            controller: controller.startDateController,
                           )),
                         ),
                         const SizedBox(width: 12),
@@ -118,7 +118,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                         Expanded(
                           child: Obx(() => CustomDatePickerField(
                             label: AppStrings.endDate,
-                            controller: controller.endDateController.value,
+                            controller: controller.endDateController,
                           )),
                         ),
                       ],
@@ -146,11 +146,11 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                     const SizedBox(height: 16),
                     // Technician Name Filter - Only show for admins
                     if (userController.isAdmin)
-                      Obx(() => CustomTextField(
+                      CustomTextField(
                         label: AppStrings.technicianName,
                         hint: 'e.g. John Doe',
-                        controller: controller.technicianNameController.value,
-                      )),
+                        controller: controller.technicianNameController,
+                      ),
 
                     const SizedBox(height: 32),
 

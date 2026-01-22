@@ -5,6 +5,6 @@ import 'package:lf_project/features/reports/controllers/report_details_controlle
 class ReportDetailsBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<ReportDetailsController>(() => ReportDetailsController());
+    Get.lazyPut<ReportDetailsController>(() => ReportDetailsController(report: Get.arguments));
   }
 }

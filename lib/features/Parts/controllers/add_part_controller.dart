@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/models/part_model.dart';
+import '../services/parts_service.dart';
+import '../../../core/controllers/user_controller.dart';
 
 class AddPartController extends GetxController {
   // Form controllers
@@ -17,10 +19,19 @@ class AddPartController extends GetxController {
   var isLoading = false.obs;
 
   final locations = [
-    'Main Warehouse - A1',
-    'Service Van - V04',
-    'Regional Hub - West',
+    'Sac_A',
+    'Sac_1',
+    'Sac_2',
+    'Sac_3',
+    'Sac_4',
+    'Sac_5',
+    'Sac_6',
+    'Sac_7',
+    'Sac_8',
+    'Sac_9',
   ];
+
+  final PartsService _partsService = PartsService();
 
   @override
   void onClose() {
@@ -92,27 +103,22 @@ class AddPartController extends GetxController {
     isLoading.value = true;
 
     try {
-      // Create new part
-      final newPart = PartModel(
+      // Create new part via API
+      final userController = Get.find<UserController>();
+      final result = await _partsService.createPart(
+        userController.accessToken.value,
         name: partNameController.text.trim(),
-        brand: manufacturerController.text.trim(),
-        quantity: quantityController.text,
-        location: selectedLocation.value,
-        imageUrl: selectedImagePath.value.isNotEmpty
-            ? selectedImagePath.value
-            : 'https://via.placeholder.com/400x300?text=No+Image',
-        referenceNumber: designationController.text.trim(),
+        reference: designationController.text.trim(),
+        manufacturer: manufacturerController.text.trim(),
         description: descriptionController.text.trim().isNotEmpty
             ? descriptionController.text.trim()
             : null,
+        initialQuantity: int.parse(quantityController.text),
+        location: selectedLocation.value,
       );
 
-      // Here you would typically save to your backend/database
-      // For now, we'll just simulate saving
-      await Future.delayed(const Duration(seconds: 1));
-
       // Navigate back to parts management
-      Get.back(result: newPart);
+      Get.back(result: result);
 
       Get.snackbar('Success', 'Part added successfully');
 

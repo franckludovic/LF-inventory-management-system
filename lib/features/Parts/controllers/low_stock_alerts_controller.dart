@@ -1,9 +1,15 @@
 import 'package:get/get.dart';
+import '../../../core/models/part_model.dart';
+import '../services/parts_service.dart';
+import '../../../core/controllers/user_controller.dart';
 
 class LowStockAlertsController extends GetxController {
   var selectedFilter = Rx<String?>(null);
   var criticalAlerts = <Map<String, dynamic>>[].obs;
   var lowAlerts = <Map<String, dynamic>>[].obs;
+  var isLoading = false.obs;
+
+  final PartsService _partsService = PartsService();
 
   @override
   void onInit() {
@@ -11,33 +17,41 @@ class LowStockAlertsController extends GetxController {
     loadAlerts();
   }
 
-  void loadAlerts() {
-    criticalAlerts.assignAll([
-      {
-        'title': 'Door Hanger Roller - Type A',
-        'location': 'Van Bin 4, Main Locker',
-        'currentStock': 3,
-        'maxStock': 10,
-        'isCritical': true,
-      },
-      {
-        'title': 'Traction Steel Cable (50m)',
-        'location': 'Storage Rack B',
-        'currentStock': 1,
-        'maxStock': 5,
-        'isCritical': true,
-      },
-    ]);
+  Future<void> loadAlerts() async {
+    try {
+      isLoading.value = true;
+      final userController = Get.find<UserController>();
+      final partsData = await _partsService.getAllParts(userController.accessToken.value);
+      final parts = partsData.map((part) => PartModel.fromMap(part)).toList();
 
-    lowAlerts.assignAll([
-      {
-        'title': 'Limit Switch - X12',
-        'location': 'Emergency Bag',
-        'currentStock': 6,
-        'maxStock': 8,
-        'isCritical': false,
-      },
-    ]);
+      final critical = <Map<String, dynamic>>[];
+      final low = <Map<String, dynamic>>[];
+
+      for (final part in parts) {
+        if (part.isLowStock) {
+          final alert = {
+            'title': part.name,
+            'location': part.location,
+            'currentStock': part.quantity,
+            'maxStock': 10,
+            'isCritical': int.parse(part.quantity) <= 2, // Critical if 2 or less
+          };
+
+          if (int.parse(part.quantity) <= 2) {
+            critical.add(alert);
+          } else {
+            low.add(alert);
+          }
+        }
+      }
+
+      criticalAlerts.assignAll(critical);
+      lowAlerts.assignAll(low);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load alerts: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void onFilterSelected(String? filter) {

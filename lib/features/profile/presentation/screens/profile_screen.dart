@@ -21,6 +21,41 @@ class ProfileScreen extends GetView<ProfileController> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            // Default Credentials Warning Pill
+            Obx(() => controller.showDefaultCredentialsWarning.value
+              ? Container(
+                  margin: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.warning.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning, color: AppColors.warning, size: 20),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Please change your default admin credentials for security.',
+                          style: TextStyle(
+                            color: AppColors.warning,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: controller.showDefaultCredentialsWarningModal,
+                        icon: Icon(Icons.arrow_forward, color: AppColors.warning, size: 20),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
+            ),
             // Profile Header
             Container(
               padding: const EdgeInsets.all(24),
@@ -115,16 +150,22 @@ class ProfileScreen extends GetView<ProfileController> {
                           icon: Icons.mail,
                           title: controller.email.value,
                           subtitle: 'Email Address',
+                          showEditIcon: true,
+                          onEditTap: controller.editEmail,
                         )),
                         Obx(() => ProfileListItem(
                           icon: Icons.business,
                           title: controller.department.value,
                           subtitle: 'Department',
+                          showEditIcon: true,
+                          onEditTap: controller.editDepartment,
                         )),
                         Obx(() => ProfileListItem(
                           icon: Icons.location_on,
                           title: controller.region.value,
                           subtitle: 'Region',
+                          showEditIcon: true,
+                          onEditTap: controller.editRegion,
                         )),
                         Obx(() => ProfileListItem(
                           icon: Icons.calendar_today,

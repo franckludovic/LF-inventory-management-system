@@ -7,6 +7,8 @@ class ProfileListItem extends StatelessWidget {
   final String subtitle;
   final VoidCallback? onTap;
   final bool showChevron;
+  final bool showEditIcon;
+  final VoidCallback? onEditTap;
 
   const ProfileListItem({
     super.key,
@@ -15,6 +17,8 @@ class ProfileListItem extends StatelessWidget {
     required this.subtitle,
     this.onTap,
     this.showChevron = false,
+    this.showEditIcon = false,
+    this.onEditTap,
   });
 
   @override

@@ -2,59 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lf_project/core/constants/strings.dart';
 import 'package:lf_project/core/controllers/user_controller.dart';
+import 'package:lf_project/features/auth/services/auth_service.dart';
 
-
-// class LoginController extends GetxController {
-//   // -------------------- TEXT CONTROLLERS --------------------
-//   final TextEditingController usernameController = TextEditingController();
-//   final TextEditingController passwordController = TextEditingController();
-
-//   // -------------------- STATE --------------------
-//   final RxBool isLoading = false.obs;
-//   final RxString errorMessage = ''.obs;
-
-//   // -------------------- LOGIN HANDLER --------------------
-//   Future<void> handleLogin() async {
-//     // Clear previous error
-//     errorMessage.value = '';
-
-//     final username = usernameController.text.trim();
-//     final password = passwordController.text.trim();
-
-//     // -------------------- VALIDATION --------------------
-//     if (username.isEmpty || password.isEmpty) {
-//       errorMessage.value = AppStrings.validationError;
-//       return;
-//     }
-
-//     try {
-//       isLoading.value = true;
-
-//       //  Simulate API call ( renplcase apres)
-//       await Future.delayed(const Duration(seconds: 2));
-
-//       // -------------------- MOCK LOGIN LOGIC --------------------
-//       if (username == 'test' && password == 'test') {
-//         // ✅ SUCCESS → Navigate to home
-//         Get.offAllNamed('/home');
-//       } else {
-//         errorMessage.value = 'Invalid username or password';
-//       }
-//     } catch (e) {
-//       errorMessage.value = 'Something went wrong. Please try again.';
-//     } finally {
-//       isLoading.value = false;
-//     }
-//   }
-
-//   // -------------------- CLEANUP --------------------
-//   @override
-//   void onClose() {
-//     usernameController.dispose();
-//     passwordController.dispose();
-//     super.onClose();
-//   }
-// }
 
 class LoginController extends GetxController {
   final TextEditingController usernameController = TextEditingController();
@@ -66,31 +15,32 @@ class LoginController extends GetxController {
   Future<void> handleLogin() async {
     errorMessage.value = '';
 
-    final username = usernameController.text.trim().toLowerCase();
+    final email = usernameController.text.trim().toLowerCase();
     final password = passwordController.text.trim();
 
-    if (username.isEmpty || password.isEmpty) {
+    if (email.isEmpty || password.isEmpty) {
       errorMessage.value = AppStrings.validationError;
       return;
     }
 
     try {
       isLoading.value = true;
-      await Future.delayed(const Duration(seconds: 1));
+
+      final authService = AuthService();
+      final data = await authService.login(email, password);
 
       final userController = Get.find<UserController>();
 
-      if (username == 'admin' && password == 'admin') {
-        userController.setUser('admin', 'admin');
-        Get.offAllNamed('/');
-      }
-      else if (username == 'test' && password == 'test') {
-        userController.setUser('test', 'technician');
-        Get.offAllNamed('/');
-      }
-      else {
-        errorMessage.value = 'Invalid username or password';
-      }
+      // Store user data and tokens
+      userController.setUser(data['nom'] ?? data['email'] ?? 'User', List<String>.from(data['role'] ?? []));
+      userController.setTokens(data['accessToken'] ?? '', data['refreshToken'] ?? '');
+
+      // Store tokens in secure storage for persistence
+      // TODO: Implement secure storage for tokens
+
+      Get.offAllNamed('/');
+    } catch (e) {
+      errorMessage.value = e.toString().replaceFirst('Exception: ', '');
     } finally {
       isLoading.value = false;
     }

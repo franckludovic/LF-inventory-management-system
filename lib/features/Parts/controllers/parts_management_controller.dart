@@ -2,15 +2,19 @@ import 'package:get/get.dart';
 import '../../../core/models/part_model.dart';
 import '../../../routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import '../services/parts_service.dart';
+import '../../../core/controllers/user_controller.dart';
 
 class PartsManagementController extends GetxController {
   var parts = <PartModel>[].obs;
   var filteredParts = <PartModel>[].obs;
   var searchQuery = ''.obs;
   var selectedFilter = 'All Parts'.obs;
+  var isLoading = false.obs;
   final TextEditingController searchController = TextEditingController();
 
   final filters = ['All Parts', 'Sensors', 'Cables', 'Boards'];
+  final PartsService _partsService = PartsService();
 
   @override
   void onInit() {
@@ -19,21 +23,18 @@ class PartsManagementController extends GetxController {
     _setupSearchAndFilter();
   }
 
-  void loadParts() {
-    parts.assignAll([
-      PartModel(
-        name: 'Traction Motor Brush',
-        brand: 'Otis',
-        quantity: '07',
-        location: 'Sac 3, Sac 6',
-        imageUrl: 'imagessssss',
-        referenceNumber: 'BR-405',
-        locations: [
-          {'Sac 3': '5'},
-          {'Sac 6': '2'},
-        ],
-      ) 
-    ]);
+  Future<void> loadParts() async {
+    try {
+      isLoading.value = true;
+      final userController = Get.find<UserController>();
+      final partsData = await _partsService.getAllParts(userController.accessToken.value);
+      final partsList = partsData.map((part) => PartModel.fromMap(part)).toList();
+      parts.assignAll(partsList);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load parts: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void _setupSearchAndFilter() {

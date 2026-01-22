@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/models/location_model.dart';
 import '../../../routes/app_routes.dart';
+import '../services/location_service.dart';
 
 class LocationManagementController extends GetxController {
   var locations = <LocationModel>[].obs;
   var filteredLocations = <LocationModel>[].obs;
   var searchQuery = ''.obs;
+  var isLoading = false.obs;
   final TextEditingController searchController = TextEditingController();
+
+  final LocationService _locationService = LocationService();
 
   @override
   void onInit() {
@@ -16,14 +20,18 @@ class LocationManagementController extends GetxController {
     _setupSearch();
   }
 
-  void loadLocations() {
-    // Mock data for now
-    locations.assignAll([
-      LocationModel(name: 'Sac 1', maxQuantity: 100, totalQuantity: 50),
-      LocationModel(name: 'Sac 3', maxQuantity: 200, totalQuantity: 150),
-      LocationModel(name: 'Service Truck A', maxQuantity: null, totalQuantity: 20),
-    ]);
-    filteredLocations.assignAll(locations);
+  Future<void> loadLocations() async {
+    try {
+      isLoading.value = true;
+      final locationsData = await _locationService.getAllLocations();
+      final locationsList = locationsData.map((location) => LocationModel.fromMap(location)).toList();
+      locations.assignAll(locationsList);
+      filteredLocations.assignAll(locations);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load locations: $e');
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   void _setupSearch() {

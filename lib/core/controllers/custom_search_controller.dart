@@ -2,29 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lf_project/core/models/part_model.dart';
 import 'package:lf_project/core/constants/strings.dart';
+import 'package:lf_project/features/Parts/services/parts_service.dart';
+import 'package:lf_project/core/controllers/user_controller.dart';
 
 class CustomSearchController extends GetxController {
-  // ==============================
-  // SEARCH INPUT
-  // ==============================
+
   final TextEditingController searchController = TextEditingController();
 
-  // ==============================
-  // FILTER STATE
-  // ==============================
+
   final RxString selectedStatus = 'All'.obs;
   final RxString selectedCompany = 'All'.obs;
   final RxString selectedLocation = 'All'.obs;
 
-  // ==============================
-  // DATA
-  // ==============================
-  final RxList<PartModel> filteredParts = <PartModel>[].obs;
-  late final List<PartModel> _allParts;
 
-  // ==============================
-  // FILTER OPTIONS
-  // ==============================
+  final RxList<PartModel> filteredParts = <PartModel>[].obs;
+  final RxList<PartModel> _allParts = <PartModel>[].obs;
+  final RxBool isLoading = false.obs;
+
+
   final List<String> statusOptions = const [
     'All',
     'In Stock',
@@ -52,17 +47,13 @@ class CustomSearchController extends GetxController {
     'External Warehouse',
   ];
 
-  // ==============================
-  // LIFECYCLE
-  // ==============================
+  final PartsService _partsService = PartsService();
+
+
   @override
   void onInit() {
     super.onInit();
-
-    _allParts = _buildMockParts();
-
-    // Initial state
-    filteredParts.assignAll(_allParts);
+    loadParts();
 
     // Search listener
     searchController.addListener(_filterParts);
@@ -74,16 +65,27 @@ class CustomSearchController extends GetxController {
     );
   }
 
-  // ==============================
-  // PUBLIC API (UI CALLS THIS)
-  // ==============================
+  Future<void> loadParts() async {
+    try {
+      isLoading.value = true;
+      final userController = Get.find<UserController>();
+      final partsData = await _partsService.getAllParts(userController.accessToken.value);
+      final partsList = partsData.map((part) => PartModel.fromMap(part)).toList();
+      _allParts.assignAll(partsList);
+      filteredParts.assignAll(_allParts);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load parts: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+
   void filterParts() {
     _filterParts();
   }
 
-  // ==============================
-  // PRIVATE FILTER LOGIC
-  // ==============================
+
   void _filterParts() {
     final query = searchController.text.trim().toLowerCase();
 
@@ -116,54 +118,14 @@ class CustomSearchController extends GetxController {
     filteredParts.assignAll(results);
   }
 
-  // ==============================
-  // NAVIGATION
-  // ==============================
   void navigateToPartDetails(PartModel part) {
     Get.toNamed('/part-details', arguments: part);
   }
 
-  // ==============================
-  // CLEANUP
-  // ==============================
   @override
   void onClose() {
     searchController.dispose();
     super.onClose();
   }
 
-  // ==============================
-  // MOCK DATA (MATCHES MODEL)
-  // ==============================
-  List<PartModel> _buildMockParts() {
-    return [
-      PartModel(
-        name: AppStrings.overspeedGovernor,
-        brand: AppStrings.otis,
-        quantity: 'Qty: 03',
-        location: 'Sac 3, Sac 6',
-        imageUrl: 'https://via.placeholder.com/150',
-        referenceNumber: 'REF-001-OG',
-        isLowStock: false,
-      ),
-      PartModel(
-        name: AppStrings.doorRollerAssembly,
-        brand: AppStrings.schindler,
-        quantity: 'Qty: 00',
-        location: 'Sac 1, Bin 12A',
-        imageUrl: 'https://via.placeholder.com/150',
-        referenceNumber: 'REF-002-DRA',
-        isLowStock: true,
-      ),
-      PartModel(
-        name: AppStrings.emergencyLightBattery,
-        brand: AppStrings.kone,
-        quantity: 'Qty: 01',
-        location: 'Service Truck A',
-        imageUrl: 'https://via.placeholder.com/150',
-        referenceNumber: 'REF-003-ELB',
-        isLowStock: false,
-      ),
-    ];
-  }
 }

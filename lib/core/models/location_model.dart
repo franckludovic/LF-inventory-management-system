@@ -1,20 +1,22 @@
 class LocationModel {
+  final String? id;
   final String name;
   final int? maxQuantity;
   final int totalQuantity;
 
   const LocationModel({
+    this.id,
     required this.name,
     this.maxQuantity,
     this.totalQuantity = 0,
   });
 
-  // Factory constructor to create LocationModel from map
+  // Factory constructor to create LocationModel from backend sac data
   factory LocationModel.fromMap(Map<String, dynamic> map) {
     return LocationModel(
-      name: map['name'] ?? '',
-      maxQuantity: map['maxQuantity'],
-      totalQuantity: map['totalQuantity'] ?? 0,
+      name: map['nom'] ?? '',
+      maxQuantity: map['quantiteMax'],
+      totalQuantity: map['quantite_total'] ?? 0,
     );
   }
 
