@@ -4,6 +4,6 @@ import '../controllers/generate_report_controller.dart';
 class GenerateReportBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<GenerateReportController>(() => GenerateReportController());
+    Get.put<GenerateReportController>(GenerateReportController());
   }
 }

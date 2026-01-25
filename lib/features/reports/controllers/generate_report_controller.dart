@@ -10,7 +10,7 @@ class GenerateReportController extends GetxController {
   var searchQuery = ''.obs;
   var selectedFilter = 'All Reports'.obs;
   var selectedReportType = 'Weekly Stock Activity Report'.obs;
-  var selectedPartName = ''.obs;
+  var selectedPartName = 'All Parts'.obs;
   var isLoading = false.obs;
   final TextEditingController searchController = TextEditingController();
   final TextEditingController startDateController = TextEditingController();

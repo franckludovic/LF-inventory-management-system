@@ -48,7 +48,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                     ),
                     const SizedBox(height: 8),
                     Obx(() => DropdownButtonFormField<String>(
-                      value: controller.selectedReportType.value,
+                      value: controller.selectedReportType.value.isEmpty ? null : controller.selectedReportType.value,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
@@ -108,18 +108,18 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                       children: [
                         // Start Date
                         Expanded(
-                          child: Obx(() => CustomDatePickerField(
+                          child: CustomDatePickerField(
                             label: AppStrings.startDate,
                             controller: controller.startDateController,
-                          )),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         // End Date
                         Expanded(
-                          child: Obx(() => CustomDatePickerField(
+                          child: CustomDatePickerField(
                             label: AppStrings.endDate,
                             controller: controller.endDateController,
-                          )),
+                          ),
                         ),
                       ],
                     ),
@@ -137,12 +137,12 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                     ),
                     const SizedBox(height: 16),
                     // Part Name Filter
-                    Obx(() => CustomDropdown(
+                    CustomDropdown(
                       label: AppStrings.partName,
-                      value: controller.selectedPartName.value,
+                      value: controller.selectedPartName,
                       items: controller.partNames,
                       onChanged: controller.updateSelectedPartName,
-                    )),
+                    ),
                     const SizedBox(height: 16),
                     // Technician Name Filter - Only show for admins
                     if (userController.isAdmin)

@@ -7,7 +7,8 @@ class SearchService {
   /// Backend: GET /composant/by-name, expects {nom: name} in body
   Future<List<dynamic>> searchPartsByName(String name) async {
     try {
-      final response = await _apiService.get('/composant/by-name', data: {'nom': name});
+      
+      final response = await _apiService.get('/composant/by-name',  queryParameters: {'nom': name});
 
       if (response.statusCode == 200) {
         return response.data as List<dynamic>;

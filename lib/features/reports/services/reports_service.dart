@@ -4,10 +4,10 @@ class ReportsService {
   final ApiService _apiService = ApiService();
 
   /// Get all logs for admin
-  /// Backend: GET /log/all-logs (admin only)
+  /// Backend: GET /api/logs/all-logs (admin only)
   Future<List<dynamic>> getAllLogsAdmin() async {
     try {
-      final response = await _apiService.get('/log/all-logs');
+      final response = await _apiService.get('/api/logs/all-logs');
 
       if (response.statusCode == 200) {
         return response.data as List<dynamic>;
@@ -20,10 +20,10 @@ class ReportsService {
   }
 
   /// Get all logs for technician (own logs only)
-  /// Backend: GET /log/all-logs-technician (technician only)
+  /// Backend: GET /api/logs/all-logs-technician (technician only)
   Future<List<dynamic>> getAllLogsTechnician() async {
     try {
-      final response = await _apiService.get('/log/all-logs-technician');
+      final response = await _apiService.get('/api/logs/all-logs-technician');
 
       if (response.statusCode == 200) {
         return response.data as List<dynamic>;
@@ -36,7 +36,7 @@ class ReportsService {
   }
 
   /// Get logs by date range for admin
-  /// Backend: GET /log/by-date, expects {startDate, endDate} in body (admin only)
+  /// Backend: GET /api/logs/by-date, expects {startDate, endDate} in body (admin only)
   Future<List<dynamic>> getLogsByDateAdmin(DateTime startDate, DateTime endDate) async {
     try {
       final data = {
@@ -44,7 +44,7 @@ class ReportsService {
         'endDate': endDate.toIso8601String(),
       };
 
-      final response = await _apiService.get('/log/by-date', queryParameters: data);
+      final response = await _apiService.get('/api/logs/by-date', queryParameters: data);
 
       if (response.statusCode == 200) {
         return response.data as List<dynamic>;
@@ -57,7 +57,7 @@ class ReportsService {
   }
 
   /// Get logs by date range for technician (own logs only)
-  /// Backend: GET /log/by-date-technician, expects {startDate, endDate} in body (technician only)
+  /// Backend: GET /api/logs/by-date-technician, expects {startDate, endDate} in body (technician only)
   Future<List<dynamic>> getLogsByDateTechnician(DateTime startDate, DateTime endDate) async {
     try {
       final data = {
@@ -65,7 +65,7 @@ class ReportsService {
         'endDate': endDate.toIso8601String(),
       };
 
-      final response = await _apiService.get('/log/by-date-technician', queryParameters: data);
+      final response = await _apiService.get('/api/logs/by-date-technician', queryParameters: data);
 
       if (response.statusCode == 200) {
         return response.data as List<dynamic>;

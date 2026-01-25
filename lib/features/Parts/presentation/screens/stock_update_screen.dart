@@ -56,7 +56,7 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                   // Select Bag Dropdown
                   Obx(() => CustomDropdown(
                     label: 'STORAGE BAG',
-                    value: controller.selectedBag.value.isEmpty ? null : controller.selectedBag.value,
+                    value: controller.selectedBag,
                     items: controller.bagOptions,
                     onChanged: controller.selectBag,
                   )),
@@ -94,7 +94,7 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                       const SizedBox(height: 16),
                       CustomDropdown(
                         label: 'ADDITIONAL LOCATION',
-                        value: controller.selectedAdditionalLocation.value.isEmpty ? null : controller.selectedAdditionalLocation.value,
+                        value: controller.selectedAdditionalLocation,
                         items: controller.availableLocations,
                         onChanged: controller.selectAdditionalLocation,
                       ),
