@@ -102,6 +102,14 @@ class AppStrings {
   static const String stockUpdatedMessage = 'Your stock has been updated successfully.';
   static const String backToInventory = 'Back to Inventory';
 
+  // Stock Update Error Modal
+  static const String stockUpdateError = 'Stock Update Error';
+  static const String exceedsMaxCapacity = 'The quantity you are trying to add exceeds the maximum capacity of the selected location.';
+  static const String maxAllowedToAdd = 'Maximum allowed to add:';
+  static const String unitsLower = 'units';
+  static const String adjustQuantity = 'Adjust Quantity';
+  static const String chooseAnotherLocation = 'Choose Another Location';
+
   // Generate Report Screen
   static const String generateReport = 'Generate Report';
   static const String reportType = 'Report Type';

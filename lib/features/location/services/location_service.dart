@@ -6,7 +6,7 @@ class LocationService {
   /// Get all locations/SAC
   Future<List<dynamic>> getAllLocations() async {
     try {
-      final response = await _apiService.get('/sac/all');
+      final response = await _apiService.get('/api/sacs/');
 
       if (response.statusCode == 200) {
         return response.data as List<dynamic>;
@@ -29,7 +29,7 @@ class LocationService {
         'quantiteMax': maxQuantity,
       };
 
-      final response = await _apiService.post('/sac', data: data);
+      final response = await _apiService.post('/api/sacs/', data: data);
 
       if (response.statusCode == 201) {
         return response.data;
@@ -52,7 +52,7 @@ class LocationService {
       if (name != null) data['nom'] = name;
       if (maxQuantity != null) data['quantiteMax'] = maxQuantity;
 
-      final response = await _apiService.put('/sac/$locationId', data: data);
+      final response = await _apiService.put('/api/sacs/$locationId', data: data);
 
       if (response.statusCode == 200) {
         return response.data;
@@ -67,7 +67,7 @@ class LocationService {
   /// Delete location
   Future<Map<String, dynamic>> deleteLocation(String locationId) async {
     try {
-      final response = await _apiService.delete('/sac/$locationId');
+      final response = await _apiService.delete('/api/sacs/$locationId');
 
       if (response.statusCode == 200) {
         return response.data;

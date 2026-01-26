@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../../../core/models/part_model.dart';
 import '../services/parts_service.dart';
 import '../../../core/controllers/user_controller.dart';
+import '../../../core/constants/strings.dart';
+import '../../../features/location/services/location_service.dart';
 
 class StockUpdateController extends GetxController {
 
@@ -14,6 +16,7 @@ class StockUpdateController extends GetxController {
   final RxBool isLoading = false.obs;
 
   final PartsService _partsService = PartsService();
+  final LocationService _locationService = LocationService();
 
   final RxString selectedBag = RxString('');
   final RxInt quantity = 1.obs;
@@ -98,9 +101,64 @@ class StockUpdateController extends GetxController {
       Get.snackbar('Success', 'Stock updated successfully');
       Get.toNamed('/stock-update-success');
     } catch (e) {
-      Get.snackbar('Error', 'Failed to update stock: $e');
+      final errorMessage = e.toString();
+      if (errorMessage.contains('Exceeds max capacity')) {
+        await _showCapacityErrorModal();
+      } else {
+        Get.snackbar('Error', 'Failed to update stock: $errorMessage');
+      }
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> _showCapacityErrorModal() async {
+    try {
+      final sacName = selectedBag.value.split(' - ')[0]; // e.g., 'Sac 1'
+      final locations = await _locationService.getAllLocations();
+      final sac = locations.firstWhere((s) => s['nom'] == sacName, orElse: () => null);
+      if (sac == null) {
+        Get.snackbar('Error', 'Failed to get location details');
+        return;
+      }
+      final maxAllowed = sac['quantiteMax'] - sac['quantite_total'];
+
+      Get.dialog(
+        AlertDialog(
+          title: Text(AppStrings.stockUpdateError),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(AppStrings.exceedsMaxCapacity),
+              const SizedBox(height: 10),
+              Text('${AppStrings.maxAllowedToAdd} $maxAllowed ${AppStrings.unitsLower}'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text(AppStrings.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                Get.back();
+                // Choose another location - perhaps open location selector
+                // For now, just close
+              },
+              child: Text(AppStrings.chooseAnotherLocation),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Get.back();
+                quantity.value = maxAllowed;
+              },
+              child: Text(AppStrings.adjustQuantity),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load location details: $e');
     }
   }
 
