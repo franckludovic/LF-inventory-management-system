@@ -66,7 +66,7 @@ class PartCardWidget extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            part.name,
+                            part.designation,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -74,7 +74,7 @@ class PartCardWidget extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Model: ${part.referenceNumber ?? 'N/A'} | ${part.brand}',
+                            'Model: ${part.reference ?? 'N/A'} | ${part.fabriquant}',
                             style: TextStyle(
                               fontSize: 14,
                               color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lf_project/core/constants/strings.dart';
 import 'package:lf_project/core/controllers/user_controller.dart';
+import 'package:lf_project/core/utils/error_handler.dart';
 import 'package:lf_project/features/auth/services/auth_service.dart';
 
 
@@ -40,7 +41,7 @@ class LoginController extends GetxController {
 
       Get.offAllNamed('/');
     } catch (e) {
-      errorMessage.value = e.toString().replaceFirst('Exception: ', '');
+      errorMessage.value = ErrorHandler.getErrorMessage(e);
     } finally {
       isLoading.value = false;
     }

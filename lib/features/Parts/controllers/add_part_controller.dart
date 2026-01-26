@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/models/part_model.dart';
 import '../services/parts_service.dart';
 import '../../../core/controllers/user_controller.dart';
+import '../../../features/location/services/location_service.dart';
 
 class AddPartController extends GetxController {
   // Form controllers
@@ -15,23 +16,20 @@ class AddPartController extends GetxController {
 
   // Reactive variables
   var selectedLocation = ''.obs;
+  var selectedSacName = ''.obs;
   var selectedImagePath = ''.obs;
   var isLoading = false.obs;
+  var isLoadingLocations = false.obs;
+  var availableLocations = <String>['Loading...'].obs;
 
-  final locations = [
-    'Sac_A',
-    'Sac_1',
-    'Sac_2',
-    'Sac_3',
-    'Sac_4',
-    'Sac_5',
-    'Sac_6',
-    'Sac_7',
-    'Sac_8',
-    'Sac_9',
-  ];
-
+  final LocationService _locationService = LocationService();
   final PartsService _partsService = PartsService();
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadAvailableLocations();
+  }
 
   @override
   void onClose() {
@@ -43,8 +41,17 @@ class AddPartController extends GetxController {
     super.onClose();
   }
 
-  void onLocationSelected(String location) {
-    selectedLocation.value = location;
+  void onLocationSelected(String? location) {
+    if (location != null) {
+      selectedLocation.value = location;
+      // Extract sac name from display string (e.g., "sac 1 12/50" -> "sac 1")
+      final parts = location.split(' ');
+      if (parts.length >= 2) {
+        selectedSacName.value = '${parts[0]} ${parts[1]}';
+      } else {
+        selectedSacName.value = location;
+      }
+    }
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -114,7 +121,7 @@ class AddPartController extends GetxController {
             ? descriptionController.text.trim()
             : null,
         initialQuantity: int.parse(quantityController.text),
-        location: selectedLocation.value,
+        location: selectedSacName.value,
       );
 
       // Navigate back to parts management
@@ -126,6 +133,63 @@ class AddPartController extends GetxController {
       Get.snackbar('Error', 'Failed to save part: $e');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadAvailableLocations() async {
+    isLoadingLocations.value = true;
+    try {
+      final userController = Get.find<UserController>();
+
+      // Check if user is logged in
+      if (!userController.isLoggedIn) {
+        Get.snackbar('Error', 'Please login first');
+        return;
+      }
+
+      // Check if user has required role
+      if (!userController.userRole.contains('ROLE_ADMIN') && !userController.userRole.contains('ROLE_TECHNICIAN')) {
+        Get.snackbar('Error', 'You need to be logged in as Admin or Technician to access locations');
+        return;
+      }
+
+      // Load all SACs
+      final sacs = await _locationService.getAllLocations();
+
+      // Load all parts to calculate usage
+      final parts = await _partsService.getAllParts(userController.accessToken.value);
+
+      // Calculate usage per SAC
+      final usageMap = <String, int>{};
+      for (var part in parts) {
+        final sacId = part['sacId']?.toString();
+        final quantity = (part['quantite'] ?? 0) as int;
+        if (sacId != null) {
+          usageMap[sacId] = (usageMap[sacId] ?? 0) + quantity;
+        }
+      }
+
+      // Filter SACs that are not full and format display
+      final available = <String>[];
+      for (var sac in sacs) {
+        final sacId = sac['id']?.toString();
+        final name = sac['nom'] ?? 'Unknown';
+        final maxCapacity = sac['capaciteMax'] ?? 0;
+        final currentUsage = usageMap[sacId] ?? 0;
+        final remaining = maxCapacity - currentUsage;
+
+        if (remaining > 0) {
+          available.add('$name $currentUsage/$maxCapacity');
+        }
+      }
+
+      availableLocations.assignAll(available);
+    } catch (e) {
+      print('Error loading locations: $e');
+      Get.snackbar('Error', 'Failed to load locations from database. Please check your connection and try again.');
+      // Don't show dummy data, let it show "No locations available"
+    } finally {
+      isLoadingLocations.value = false;
     }
   }
 

@@ -62,7 +62,7 @@ class SearchPartCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          part.name,
+                          part.designation,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -94,7 +94,7 @@ class SearchPartCard extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      part.brand,
+                      part.fabriquant,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,

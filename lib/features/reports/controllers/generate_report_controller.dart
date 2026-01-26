@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../../../core/models/report_model.dart';
+import '../../../core/utils/error_handler.dart';
 import '../services/reports_service.dart';
 import '../../../core/controllers/user_controller.dart';
 
@@ -45,7 +46,7 @@ class GenerateReportController extends GetxController {
       final reportsList = logsData.map((log) => ReportModel.fromMap(log)).toList();
       reports.assignAll(reportsList);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load reports: $e');
+      Get.snackbar('Error', ErrorHandler.getErrorMessage(e));
     } finally {
       isLoading.value = false;
     }

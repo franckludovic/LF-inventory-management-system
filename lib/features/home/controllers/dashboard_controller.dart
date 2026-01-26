@@ -47,7 +47,7 @@ class DashboardController extends GetxController {
 
   void onRestockPressed(PartModel part) {
     // TODO: Implement restock functionality
-    Get.snackbar('Restock', 'Restock functionality for ${part.name} coming soon');
+    Get.snackbar('Restock', 'Restock functionality for ${part.designation} coming soon');
   }
 
   void onProfileTap() {

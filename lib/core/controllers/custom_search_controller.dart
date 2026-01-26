@@ -92,8 +92,8 @@ class CustomSearchController extends GetxController {
     final results = _allParts.where((part) {
       final matchesSearch =
           query.isEmpty ||
-              part.name.toLowerCase().contains(query) ||
-              (part.referenceNumber?.toLowerCase().contains(query) ?? false);
+              part.designation.toLowerCase().contains(query) ||
+              (part.reference?.toLowerCase().contains(query) ?? false);
 
       final matchesStatus =
           selectedStatus.value == 'All' ||
@@ -102,7 +102,7 @@ class CustomSearchController extends GetxController {
 
       final matchesCompany =
           selectedCompany.value == 'All' ||
-              part.brand.toLowerCase() ==
+              part.fabriquant.toLowerCase() ==
                   selectedCompany.value.toLowerCase();
 
       final matchesLocation =

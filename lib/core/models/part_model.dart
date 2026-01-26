@@ -1,12 +1,12 @@
 class PartModel {
   final String id;
-  final String name;
-  final String brand;
+  final String designation;
+  final String fabriquant;
   final String quantity;
   final String location;
   final String imageUrl;
   final bool isLowStock;
-  final String? referenceNumber;
+  final String? reference;
   final String? description;
   final List<Map<String, String>>? locations;
   final String? publicId;
@@ -15,13 +15,13 @@ class PartModel {
 
   const PartModel({
     required this.id,
-    required this.name,
-    required this.brand,
+    required this.designation,
+    required this.fabriquant,
     required this.quantity,
     required this.location,
     required this.imageUrl,
     this.isLowStock = false,
-    this.referenceNumber,
+    this.reference,
     this.description,
     this.locations,
     this.publicId,
@@ -53,13 +53,13 @@ class PartModel {
 
     return PartModel(
       id: map['id'] ?? '',
-      name: map['designation'] ?? '',
-      brand: map['fabriquant'] ?? '',
+      designation: map['designation'] ?? '',
+      fabriquant: map['fabriquant'] ?? '',
       quantity: totalQuantity.toString(),
       location: locationString.isNotEmpty ? locationString : 'No location',
       imageUrl: map['imageUrl'] ?? '',
       isLowStock: totalQuantity < 5, // Consider low stock if less than 5
-      referenceNumber: map['reference'],
+      reference: map['reference'],
       description: map['description'],
       locations: locationList.isNotEmpty ? locationList : null,
       publicId: map['publicId'],

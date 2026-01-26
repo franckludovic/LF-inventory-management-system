@@ -15,7 +15,7 @@ class LocationModel {
   factory LocationModel.fromMap(Map<String, dynamic> map) {
     return LocationModel(
       name: map['nom'] ?? '',
-      maxQuantity: map['quantiteMax'],
+      maxQuantity: map['capaciteMax'],
       totalQuantity: map['quantite_total'] ?? 0,
     );
   }

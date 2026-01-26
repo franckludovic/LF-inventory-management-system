@@ -46,12 +46,12 @@ class PartsManagementController extends GetxController {
   void _filterParts() {
     var filtered = parts.where((part) {
       final matchesSearch = searchQuery.isEmpty ||
-          part.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          part.brand.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          (part.referenceNumber?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
+          part.designation.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          part.fabriquant.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          (part.reference?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false);
 
       final matchesFilter = selectedFilter.value == 'All Parts' ||
-          part.name.toLowerCase().contains(selectedFilter.value.toLowerCase());
+          part.designation.toLowerCase().contains(selectedFilter.value.toLowerCase());
 
       return matchesSearch && matchesFilter;
     }).toList();
@@ -69,12 +69,12 @@ class PartsManagementController extends GetxController {
 
   void onEditPressed(PartModel part) {
     // Handle edit action
-    Get.snackbar('Edit', 'Editing ${part.name}');
+    Get.snackbar('Edit', 'Editing ${part.designation}');
   }
 
   void onDeletePressed(PartModel part) {
     // Handle delete action
-    Get.snackbar('Delete', 'Deleting ${part.name}');
+    Get.snackbar('Delete', 'Deleting ${part.designation}');
   }
 
   void onAddPressed() {

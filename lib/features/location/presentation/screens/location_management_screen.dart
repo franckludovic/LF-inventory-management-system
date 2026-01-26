@@ -34,43 +34,52 @@ class LocationManagementScreen extends GetView<LocationManagementController> {
 
           // Locations List
           Expanded(
-            child: Obx(() {
-              if (controller.filteredLocations.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.location_off_outlined,
-                        size: 64,
-                        color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        AppStrings.noLocationsFound,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+            child: RefreshIndicator(
+              onRefresh: controller.loadLocations,
+              child: Obx(() {
+                if (controller.filteredLocations.isEmpty) {
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.location_off_outlined,
+                              size: 64,
+                              color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppStrings.noLocationsFound,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: controller.filteredLocations.length,
-                itemBuilder: (context, index) {
-                  final location = controller.filteredLocations[index];
-                  return LocationCardWidget(
-                    location: location,
-                    onEditPressed: () => controller.onEditPressed(location),
-                    onDeletePressed: () => controller.onDeletePressed(location),
+                    ),
                   );
-                },
-              );
-            }),
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: controller.filteredLocations.length,
+                  itemBuilder: (context, index) {
+                    final location = controller.filteredLocations[index];
+                    return LocationCardWidget(
+                      location: location,
+                      onEditPressed: () => controller.onEditPressed(location),
+                      onDeletePressed: () => controller.onDeletePressed(location),
+                    );
+                  },
+                );
+              }),
+            ),
           ),
         ],
       ),

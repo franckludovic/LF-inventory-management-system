@@ -45,17 +45,26 @@ class PartsService {
     String? description,
     required int initialQuantity,
     required String location,
+    String? imagePath,
   }) async {
+    final formData = FormData.fromMap({
+      'designation': name,
+      'reference': reference,
+      'fabriquant': manufacturer,
+      'description': description ?? '',
+      'sacs': '[{"$location": $initialQuantity}]',
+    });
+
+    if (imagePath != null && imagePath.isNotEmpty) {
+      formData.files.add(MapEntry(
+        'image',
+        await MultipartFile.fromFile(imagePath, filename: imagePath.split('/').last),
+      ));
+    }
+
     final response = await _apiService.post(
       '/api/composants',
-      data: {
-        'nom': name,
-        'reference': reference,
-        'fabricant': manufacturer,
-        'description': description ?? '',
-        'quantiteInitiale': initialQuantity,
-        'emplacement': location,
-      },
+      data: formData,
       options: Options(
         headers: {
           'Authorization': 'Bearer $accessToken',

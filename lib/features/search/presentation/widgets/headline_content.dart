@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 
 class HeadlineContent extends StatelessWidget {
-  final String name;
-  final String referenceNumber;
-  final String brand;
+  final String designation;
+  final String reference;
+  final String fabriquant;
 
   const HeadlineContent({
     super.key,
-    required this.name,
-    required this.referenceNumber,
-    required this.brand,
+    required this.designation,
+    required this.reference,
+    required this.fabriquant,
   });
 
   @override
@@ -23,7 +23,7 @@ class HeadlineContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            name,
+            designation,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -32,7 +32,7 @@ class HeadlineContent extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            referenceNumber,
+            reference,
             style: TextStyle(
               color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
               fontSize: 18,
@@ -40,7 +40,7 @@ class HeadlineContent extends StatelessWidget {
             ),
           ),
           Text(
-            brand,
+            fabriquant,
             style: TextStyle(
               color: AppColors.primary,
               fontSize: 12,

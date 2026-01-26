@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'dart:io';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
@@ -80,14 +81,40 @@ class AddPartScreen extends GetView<AddPartController> {
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: _buildDropdownField(
-                          label: AppStrings.bagLocation,
-                          hint: AppStrings.selectLocation,
-                          items: controller.locations,
-                          selectedValue: controller.selectedLocation.value,
-                          onChanged: controller.onLocationSelected,
-                          isDark: isDark,
-                        ),
+                        child: Obx(() {
+                          if (controller.isLoadingLocations.value) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                                ),
+                              ),
+                              child: const Center(
+                                child: SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ),
+                            );
+                          }
+                          return GestureDetector(
+                            onTap: () {
+                              // Force rebuild or focus
+                            },
+                            child: _buildDropdownField(
+                              label: AppStrings.bagLocation,
+                              hint: AppStrings.selectLocation,
+                              items: controller.availableLocations.isEmpty ? ['No locations available'] : controller.availableLocations,
+                              selectedValue: controller.selectedLocation.value.isEmpty ? null : controller.selectedLocation.value,
+                              onChanged: controller.onLocationSelected,
+                              isDark: isDark,
+                            ),
+                          );
+                        }),
                       ),
                     ],
                   ),
@@ -122,8 +149,8 @@ class AddPartScreen extends GetView<AddPartController> {
                       child: controller.selectedImagePath.value.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(14),
-                              child: Image.network(
-                                controller.selectedImagePath.value,
+                              child: Image.file(
+                                File(controller.selectedImagePath.value),
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: double.infinity,
@@ -386,8 +413,8 @@ class AddPartScreen extends GetView<AddPartController> {
     required String label,
     required String hint,
     required List<String> items,
-    required String selectedValue,
-    required Function(String) onChanged,
+    required String? selectedValue,
+    required Function(String?) onChanged,
     required bool isDark,
   }) {
     return Column(
@@ -414,7 +441,7 @@ class AddPartScreen extends GetView<AddPartController> {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-              value: selectedValue.isNotEmpty ? selectedValue : null,
+              value: selectedValue?.isNotEmpty == true ? selectedValue : null,
               hint: Text(
                 hint,
                 style: TextStyle(
@@ -437,7 +464,7 @@ class AddPartScreen extends GetView<AddPartController> {
               }).toList(),
               onChanged: (String? newValue) {
                 if (newValue != null) {
-                  onChanged(newValue);
+                  onChanged(newValue!);
                 }
               },
               icon: Icon(

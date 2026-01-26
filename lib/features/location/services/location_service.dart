@@ -26,7 +26,7 @@ class LocationService {
     try {
       final data = {
         'nom': name,
-        'quantiteMax': maxQuantity,
+        'capaciteMax': maxQuantity,
       };
 
       final response = await _apiService.post('/api/sacs/', data: data);
@@ -50,7 +50,7 @@ class LocationService {
     try {
       final data = <String, dynamic>{};
       if (name != null) data['nom'] = name;
-      if (maxQuantity != null) data['quantiteMax'] = maxQuantity;
+      if (maxQuantity != null) data['capaciteMax'] = maxQuantity;
 
       final response = await _apiService.put('/api/sacs/$locationId', data: data);
 

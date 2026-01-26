@@ -5,7 +5,7 @@ import '../controllers/user_controller.dart';
 
 class ApiService {
   // static const String baseUrl = 'https://lf-inv.onrender.com';
-  static const String baseUrl = 'http://10.122.218.21:3000';
+  static const String baseUrl = 'http://172.22.154.21:3000';
 
   static ApiService? _instance;
   late final Dio _dio;

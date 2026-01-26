@@ -121,7 +121,7 @@ class StockUpdateController extends GetxController {
         Get.snackbar('Error', 'Failed to get location details');
         return;
       }
-      final maxAllowed = sac['quantiteMax'] - sac['quantite_total'];
+      final maxAllowed = sac['capaciteMax'] - sac['quantite_total'];
 
       Get.dialog(
         AlertDialog(

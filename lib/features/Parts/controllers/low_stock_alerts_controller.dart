@@ -30,7 +30,7 @@ class LowStockAlertsController extends GetxController {
       for (final part in parts) {
         if (part.isLowStock) {
           final alert = {
-            'title': part.name,
+            'title': part.designation,
             'location': part.location,
             'currentStock': part.quantity,
             'maxStock': 10,

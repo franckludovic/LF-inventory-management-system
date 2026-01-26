@@ -24,7 +24,7 @@ class PartDetailsController extends GetxController {
   }
 
   String get formattedReferenceNumber {
-    return part.referenceNumber ?? 'REF-${part.name.replaceAll(' ', '-').toUpperCase()}';
+    return part.reference ?? 'REF-${part.designation.replaceAll(' ', '-').toUpperCase()}';
   }
 
   String get quantityValue {

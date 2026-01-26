@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/strings.dart';
 import '../../../core/models/location_model.dart';
+import '../../../core/utils/error_handler.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../services/location_service.dart';
 
 class AddLocationController extends GetxController {
@@ -74,12 +76,9 @@ class AddLocationController extends GetxController {
 
   Future<void> onSaveLocation() async {
     if (!isFormValid.value) {
-      Get.snackbar(
+      SnackbarUtils.showError(
         'Validation Error',
         'Please fill in all required fields correctly',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
       return;
     }
@@ -107,23 +106,19 @@ class AddLocationController extends GetxController {
 
       final location = LocationModel.fromMap(result);
 
-      Get.snackbar(
+      SnackbarUtils.showSuccess(
         'Success',
         editingLocation != null ? 'Location updated successfully!' : 'Location added successfully!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
       );
 
-      // Navigate back with result
-      Get.back(result: location);
+      // Navigate back with result after a short delay to allow snackbar to show
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Get.back(result: location);
+      });
     } catch (e) {
-      Get.snackbar(
+      SnackbarUtils.showError(
         'Error',
-        'Failed to save location: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+        ErrorHandler.getErrorMessage(e),
       );
     } finally {
       isLoading.value = false;

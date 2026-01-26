@@ -50,9 +50,9 @@ class PartDetailsScreen extends GetView<PartDetailsController> {
 
             // Headline Content
             HeadlineContent(
-              name: controller.part.name,
-              referenceNumber: controller.part.referenceNumber ?? 'REF-${controller.part.name.replaceAll(' ', '-').toUpperCase()}',
-              brand: controller.part.brand,
+              designation: controller.part.designation,
+              reference: controller.part.reference ?? 'REF-${controller.part.designation.replaceAll(' ', '-').toUpperCase()}',
+              fabriquant: controller.part.fabriquant,
             ),
 
             // Inventory Stats
