@@ -32,9 +32,9 @@ class LocationBreakdownWidget extends StatelessWidget {
           ...locations.map((location) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: _buildLocationItem(
-              location['name'] ?? '',
-              location['quantity'] ?? '',
-              location['isPrimary'] == 'true',
+              location.keys.first,
+              location.values.first,
+              false, // Assuming no primary location for now
               isDark,
             ),
           )),

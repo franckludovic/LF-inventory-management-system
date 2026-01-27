@@ -141,7 +141,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                       // Part Name Filter
                       CustomDropdown(
                         label: AppStrings.partName,
-                        value: controller.selectedPartName,
+                        value: controller.selectedPartName.value,
                         items: controller.partNames,
                         onChanged: controller.updateSelectedPartName,
                       ),

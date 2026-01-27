@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import '../constants/colors.dart';
 
 class CustomDropdown extends StatelessWidget {
   final String label;
-  final RxString? value;
+  final String? value;
   final List<String> items;
   final ValueChanged<String?>? onChanged;
 
@@ -34,7 +33,7 @@ class CustomDropdown extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value?.value,
+          value: value,
           onChanged: onChanged,
           items: items.map<DropdownMenuItem<String>>((String item) {
             return DropdownMenuItem<String>(

@@ -4,12 +4,14 @@ import '../models/part_model.dart';
 
 class PartCardWidget extends StatelessWidget {
   final PartModel part;
+  final VoidCallback? onTap;
   final VoidCallback onEditPressed;
   final VoidCallback onDeletePressed;
 
   const PartCardWidget({
     super.key,
     required this.part,
+    this.onTap,
     required this.onEditPressed,
     required this.onDeletePressed,
   });
@@ -18,7 +20,9 @@ class PartCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
+    return InkWell(
+      onTap: onTap,
+      child: Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
@@ -45,11 +49,23 @@ class PartCardWidget extends StatelessWidget {
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
-              image: DecorationImage(
-                image: NetworkImage(part.imageUrl),
-                fit: BoxFit.cover,
-              ),
+              image: part.imageUrl != null && part.imageUrl.isNotEmpty
+                ? DecorationImage(
+                    image: NetworkImage(part.imageUrl),
+                    fit: BoxFit.cover,
+                  )
+                : null,
+              color: part.imageUrl == null || part.imageUrl.isEmpty
+                ? (isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight)
+                : null,
             ),
+            child: part.imageUrl == null || part.imageUrl.isEmpty
+              ? Icon(
+                  Icons.image_not_supported,
+                  size: 48,
+                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                )
+              : null,
           ),
 
           // Content Section
@@ -160,67 +176,12 @@ class PartCardWidget extends StatelessWidget {
                   ],
                 ),
 
-                const SizedBox(height: 16),
 
-                // Action Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: onEditPressed,
-                        icon: Icon(
-                          Icons.edit,
-                          size: 20,
-                          color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                        ),
-                        label: Text(
-                          'Edit Details',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? AppColors.cardBackgroundLight.withOpacity(0.1) : AppColors.cardBackgroundDark.withOpacity(0.1),
-                          foregroundColor: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    SizedBox(
-                      width: 96,
-                      child: ElevatedButton(
-                        onPressed: onDeletePressed,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(
-                          'Delete',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
         ],
+      ),
       ),
     );
   }

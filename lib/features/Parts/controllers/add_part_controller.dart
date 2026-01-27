@@ -122,6 +122,7 @@ class AddPartController extends GetxController {
             : null,
         initialQuantity: int.parse(quantityController.text),
         location: selectedSacName.value,
+        imagePath: selectedImagePath.value.isNotEmpty ? selectedImagePath.value : null,
       );
 
       // Navigate back to parts management

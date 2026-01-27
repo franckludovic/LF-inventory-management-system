@@ -24,12 +24,28 @@ class HeroImageHeader extends StatelessWidget {
             border: Border.all(
               color: isDark ? AppColors.borderDark : AppColors.borderLight,
             ),
-            image: DecorationImage(
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
-            ),
           ),
+          child: imageUrl.isNotEmpty && Uri.tryParse(imageUrl)?.hasScheme == true
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => _buildPlaceholder(isDark),
+                  ),
+                )
+              : _buildPlaceholder(isDark),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder(bool isDark) {
+    return Center(
+      child: Icon(
+        Icons.inventory_2_outlined,
+        size: 64,
+        color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
       ),
     );
   }

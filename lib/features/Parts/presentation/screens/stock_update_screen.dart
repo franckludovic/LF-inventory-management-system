@@ -45,19 +45,21 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Select Part TextField
-                  CustomSearchField(
+                  Obx(() => CustomSearchField(
                     label: 'SELECT PART',
                     hint: 'Search elevator part...',
-                    currentStock: 'Current Stock: 14 units',
+                    currentStock: controller.selectedPart != null
+                        ? 'Current Stock: ${controller.selectedPart!.quantity}'
+                        : 'No part selected',
                     controller: controller.searchController,
-                  ),
+                  )),
                   const SizedBox(height: 24),
 
                   // Select Bag Dropdown
                   Obx(() => CustomDropdown(
                     label: 'STORAGE BAG',
-                    value: controller.selectedBag,
-                    items: controller.bagOptions,
+                    value: controller.selectedBag.value,
+                    items: controller.bagOptions.toList(),
                     onChanged: controller.selectBag,
                   )),
                   const SizedBox(height: 16),
@@ -94,8 +96,8 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                       const SizedBox(height: 16),
                       CustomDropdown(
                         label: 'ADDITIONAL LOCATION',
-                        value: controller.selectedAdditionalLocation,
-                        items: controller.availableLocations,
+                        value: controller.selectedAdditionalLocation.value,
+                        items: controller.availableLocations.toList(),
                         onChanged: controller.selectAdditionalLocation,
                       ),
                     ],

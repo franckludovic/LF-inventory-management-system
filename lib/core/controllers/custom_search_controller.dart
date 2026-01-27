@@ -26,26 +26,9 @@ class CustomSearchController extends GetxController {
     'Out of Stock',
   ];
 
-  final List<String> companyOptions = const [
-    'All',
-    'Otis',
-    'Schindler',
-    'Kone',
-    'Generic / OEM',
-    'ThyssenKrupp',
-  ];
+  final RxList<String> companyOptions = <String>['All'].obs;
 
-  final List<String> locationOptions = const [
-    'All',
-    'Sac 3',
-    'Sac 6',
-    'Sac 1',
-    'Bin 12A',
-    'Service Truck A',
-    'Sac 9',
-    'HQ Depot',
-    'External Warehouse',
-  ];
+  final RxList<String> locationOptions = <String>['All'].obs;
 
   final PartsService _partsService = PartsService();
 
@@ -73,11 +56,31 @@ class CustomSearchController extends GetxController {
       final partsList = partsData.map((part) => PartModel.fromMap(part)).toList();
       _allParts.assignAll(partsList);
       filteredParts.assignAll(_allParts);
+
+      // Populate dynamic filter options from data
+      _populateFilterOptions();
     } catch (e) {
       Get.snackbar('Error', 'Failed to load parts: $e');
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _populateFilterOptions() {
+    // Get unique companies
+    final companies = _allParts.map((part) => part.fabriquant).toSet().toList();
+    companyOptions.assignAll(['All', ...companies]);
+
+    // Get unique locations from sacComposants
+    final locations = <String>{};
+    for (final part in _allParts) {
+      if (part.locations != null) {
+        for (final location in part.locations!) {
+          locations.add(location.keys.first);
+        }
+      }
+    }
+    locationOptions.assignAll(['All', ...locations.toList()]);
   }
 
 

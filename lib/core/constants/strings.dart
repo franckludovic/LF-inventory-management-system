@@ -53,8 +53,10 @@ class AppStrings {
   static const String sac3 = 'Sac 3';
   static const String vanStock = 'Van Stock';
   static const String lastUpdated = 'Last updated: Today, 08:42 AM by Technician ID: 4492';
-  static const String updateStock = 'Update Stock';
-  static const String addReplaceImage = 'Add / Replace Image';
+  static const String updateStock = 'Add / Remove Stock';
+  static const String addReplaceImage = 'Replace Image';
+  static const String editPart = 'Edit Part';
+  static const String deletePart = 'Delete Part';
 
   // Part names
   static const String overspeedGovernor = 'Overspeed Governor';

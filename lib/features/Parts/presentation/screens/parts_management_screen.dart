@@ -23,16 +23,16 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
         showBackButton: false,
       ),
       body: RefreshIndicator(
-        onRefresh: controller.loadParts,
+        onRefresh: searchcontroller.loadParts,
         child: Column(
           children: [
             // Search Bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: CustomSearchBar(
-                controller: controller.searchController,
+                controller: searchcontroller.searchController,
                 hintText: AppStrings.searchByPartNameOrSku,
-                onChanged: (value) => controller.onSearchChanged(value),
+                onChanged: (value) => searchcontroller.filterParts(),
               ),
             ),
 
@@ -79,8 +79,13 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
                         child: Obx(() => DropdownButtonFormField<String>(
                           value: searchcontroller.selectedCompany.value,
                           onChanged: (String? newValue) {
-                            searchcontroller.selectedCompany.value = newValue!;
-                            searchcontroller.filterParts();
+                            if (searchcontroller.companyOptions.contains(newValue)) {
+                              searchcontroller.selectedCompany.value = newValue!;
+                              searchcontroller.filterParts();
+                            } else {
+                              searchcontroller.selectedCompany.value = 'All';
+                              searchcontroller.filterParts();
+                            }
                           },
                           items: searchcontroller.companyOptions.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -135,7 +140,7 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
             // Parts List
             Expanded(
               child: Obx(() {
-                if (controller.filteredParts.isEmpty) {
+                if (searchcontroller.filteredParts.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -160,13 +165,14 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
 
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: controller.filteredParts.length,
+                  itemCount: searchcontroller.filteredParts.length,
                   itemBuilder: (context, index) {
-                    final part = controller.filteredParts[index];
+                    final part = searchcontroller.filteredParts[index];
                     return PartCardWidget(
                       part: part,
-                      onEditPressed: () => controller.onEditPressed(part),
-                      onDeletePressed: () => controller.onDeletePressed(part),
+                      onTap: () => Get.toNamed('/part-details', arguments: part),
+                      onEditPressed: () {},
+                      onDeletePressed: () {},
                     );
                   },
                 );
