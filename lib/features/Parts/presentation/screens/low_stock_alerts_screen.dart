@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../../core/widgets/part_card_widget.dart';
 import '../widgets/stock_filter_chips.dart';
 import '../widgets/low_stock_alert_item.dart';
 import '../../controllers/low_stock_alerts_controller.dart';
@@ -34,7 +35,7 @@ class LowStockAlertsScreen extends GetView<LowStockAlertsController> {
                 children: [
                   // Critical Priority Section
                   Obx(() {
-                    final filteredCritical = controller.getFilteredCriticalAlerts();
+                    final filteredCritical = controller.getFilteredCriticalParts();
                     if (filteredCritical.isEmpty) return const SizedBox.shrink();
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,13 +49,11 @@ class LowStockAlertsScreen extends GetView<LowStockAlertsController> {
                             letterSpacing: 1.2,
                           ),
                         ), const SizedBox(height: 8),
-                        ...filteredCritical.map((alert) => LowStockAlertItem(
-                          title: alert['title'],
-                          location: alert['location'],
-                          currentStock: alert['currentStock'],
-                          maxStock: alert['maxStock'],
-                          isCritical: alert['isCritical'],
-                          onOrderPressed: () => controller.onOrderPressed(alert['title']),
+                        ...filteredCritical.map((part) => PartCardWidget(
+                          part: part,
+                          onTap: () => Get.toNamed('/part-details', arguments: part),
+                          onEditPressed: () {},
+                          onDeletePressed: () {},
                         )),
                       ],
                     );
@@ -62,7 +61,7 @@ class LowStockAlertsScreen extends GetView<LowStockAlertsController> {
 
                   // Low Priority Section
                   Obx(() {
-                    final filteredLow = controller.getFilteredLowAlerts();
+                    final filteredLow = controller.getFilteredLowParts();
                     if (filteredLow.isEmpty) return const SizedBox.shrink();
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,13 +77,11 @@ class LowStockAlertsScreen extends GetView<LowStockAlertsController> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        ...filteredLow.map((alert) => LowStockAlertItem(
-                          title: alert['title'],
-                          location: alert['location'],
-                          currentStock: alert['currentStock'],
-                          maxStock: alert['maxStock'],
-                          isCritical: alert['isCritical'],
-                          onOrderPressed: () => controller.onOrderPressed(alert['title']),
+                        ...filteredLow.map((part) => PartCardWidget(
+                          part: part,
+                          onTap: () => Get.toNamed('/part-details', arguments: part),
+                          onEditPressed: () {},
+                          onDeletePressed: () {},
                         )),
                       ],
                     );

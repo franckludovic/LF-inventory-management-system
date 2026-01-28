@@ -83,7 +83,7 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                             iconColor: AppColors.primary,
                           )),
                           const SizedBox(height: 16),
-                          // Total Additions and Removals
+                          // Total Additions, Removals, and Records
                           Row(
                             children: [
                               Expanded(
@@ -103,6 +103,13 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 16),
+                          Obx(() => ReportSummaryCard(
+                            label: 'Total Records',
+                            value: '${controller.totalRecords.value}',
+                            icon: Icons.list_alt,
+                            iconColor: AppColors.primary,
+                          )),
                         ],
                       ),
                     ),

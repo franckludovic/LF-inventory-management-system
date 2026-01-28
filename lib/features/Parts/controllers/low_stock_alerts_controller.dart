@@ -5,8 +5,8 @@ import '../../../core/controllers/user_controller.dart';
 
 class LowStockAlertsController extends GetxController {
   var selectedFilter = Rx<String?>(null);
-  var criticalAlerts = <Map<String, dynamic>>[].obs;
-  var lowAlerts = <Map<String, dynamic>>[].obs;
+  var criticalParts = <PartModel>[].obs;
+  var lowParts = <PartModel>[].obs;
   var isLoading = false.obs;
 
   final PartsService _partsService = PartsService();
@@ -24,29 +24,21 @@ class LowStockAlertsController extends GetxController {
       final partsData = await _partsService.getAllParts(userController.accessToken.value);
       final parts = partsData.map((part) => PartModel.fromMap(part)).toList();
 
-      final critical = <Map<String, dynamic>>[];
-      final low = <Map<String, dynamic>>[];
+      final critical = <PartModel>[];
+      final low = <PartModel>[];
 
       for (final part in parts) {
         if (part.isLowStock) {
-          final alert = {
-            'title': part.designation,
-            'location': part.location,
-            'currentStock': part.quantity,
-            'maxStock': 10,
-            'isCritical': int.parse(part.quantity) <= 2, // Critical if 2 or less
-          };
-
           if (int.parse(part.quantity) <= 2) {
-            critical.add(alert);
+            critical.add(part);
           } else {
-            low.add(alert);
+            low.add(part);
           }
         }
       }
 
-      criticalAlerts.assignAll(critical);
-      lowAlerts.assignAll(low);
+      criticalParts.assignAll(critical);
+      lowParts.assignAll(low);
     } catch (e) {
       Get.snackbar('Error', 'Failed to load alerts: $e');
     } finally {
@@ -55,7 +47,7 @@ class LowStockAlertsController extends GetxController {
   }
 
   void onFilterSelected(String? filter) {
-    selectedFilter.value = filter;
+    selectedFilter.value = filter ?? 'All Alerts';
   }
 
   void onOrderPressed(String title) {
@@ -68,18 +60,20 @@ class LowStockAlertsController extends GetxController {
     Get.snackbar('Restock', 'Restocking all critical items');
   }
 
-  List<Map<String, dynamic>> getFilteredCriticalAlerts() {
+  List<PartModel> getFilteredCriticalParts() {
     if (selectedFilter.value == null || selectedFilter.value == 'All Alerts') {
-      return criticalAlerts;
+      return criticalParts;
     } else if (selectedFilter.value == 'Critical Only') {
-      return criticalAlerts;
+      return criticalParts;
     }
     return [];
   }
 
-  List<Map<String, dynamic>> getFilteredLowAlerts() {
+  List<PartModel> getFilteredLowParts() {
     if (selectedFilter.value == null || selectedFilter.value == 'All Alerts') {
-      return lowAlerts;
+      return lowParts;
+    } else if (selectedFilter.value == 'Low Only') {
+      return lowParts;
     }
     return [];
   }

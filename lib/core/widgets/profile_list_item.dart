@@ -78,6 +78,16 @@ class ProfileListItem extends StatelessWidget {
                 ],
               ),
             ),
+            if (showEditIcon)
+              IconButton(
+                icon: Icon(
+                  Icons.edit,
+                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                ),
+                onPressed: onEditTap,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
             if (showChevron)
               Icon(
                 Icons.chevron_right,

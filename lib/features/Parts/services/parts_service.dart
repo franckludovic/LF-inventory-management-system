@@ -79,6 +79,7 @@ class PartsService {
   Future<Map<String, dynamic>> updateStock(
     String accessToken, {
     required String partId,
+    required String sacName,
     required int quantity,
     required String operation,
     String? note,
@@ -90,7 +91,8 @@ class PartsService {
     final response = await _apiService.put(
       endpoint,
       data: {
-        'partId': partId,
+        'composantId': partId,
+        'sacName': sacName,
         'quantity': quantity,
         'note': note ?? '',
       },

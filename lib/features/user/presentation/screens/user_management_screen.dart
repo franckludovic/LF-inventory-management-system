@@ -6,6 +6,7 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/strings.dart';
 import '../../controllers/user_management_controller.dart';
 import '../widgets/technician_list_item.dart';
+import '../../../../routes/app_routes.dart';
 
 class UserManagementScreen extends GetView<UserManagementController> {
   const UserManagementScreen({super.key});
@@ -60,7 +61,10 @@ class UserManagementScreen extends GetView<UserManagementController> {
                             ).copyWith(fontSize: 12),
                           ),
                         ),
-                        ...activeTechs.map((tech) => TechnicianListItem(technician: tech)),
+                        ...activeTechs.map((tech) => TechnicianListItem(
+                          technician: tech,
+                          onTap: () => controller.onUserTap(tech),
+                        )),
                       ],
                       // Blocked Technicians Section
                       if (blockedTechs.isNotEmpty) ...[
@@ -76,7 +80,10 @@ class UserManagementScreen extends GetView<UserManagementController> {
                             ).copyWith(fontSize: 12),
                           ),
                         ),
-                        ...blockedTechs.map((tech) => TechnicianListItem(technician: tech)),
+                        ...blockedTechs.map((tech) => TechnicianListItem(
+                          technician: tech,
+                          onTap: () => controller.onUserTap(tech),
+                        )),
                       ],
                       const SizedBox(height: 100), // Space for bottom button
                     ],

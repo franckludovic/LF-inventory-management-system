@@ -31,12 +31,15 @@ class UserManagementController extends GetxController {
     try {
       isLoading.value = true;
       final usersData = await _userService.getAllUsers();
-      final techniciansList = usersData.map((user) => {
-        'id': user['id'],
-        'name': user['nom'] ?? '',
-        'role': _getRoleDisplayName(user['role']),
-        'status': 'active', // Default to active, could be derived from other fields
-        'avatar': 'https://via.placeholder.com/150?text=${user['nom']?.substring(0, 1) ?? 'U'}',
+      final techniciansList = usersData.map((user) {
+        final userMap = user as Map<String, dynamic>;
+        return {
+          ...userMap, // Keep all original user data
+          'name': userMap['nom'] ?? '',
+          'roleDisplay': _getRoleDisplayName(userMap['role']),
+          'status': 'active', // Default to active, could be derived from other fields
+          'avatar': 'https://via.placeholder.com/150?text=${userMap['nom']?.substring(0, 1) ?? 'U'}',
+        };
       }).toList();
       technicians.assignAll(techniciansList);
       filterTechnicians();
@@ -63,12 +66,12 @@ class UserManagementController extends GetxController {
       filteredTechnicians.assignAll(
         technicians.where((tech) =>
             tech['name'].toLowerCase().contains(searchQuery.value.toLowerCase()) ||
-            tech['role'].toLowerCase().contains(searchQuery.value.toLowerCase())),
+            tech['roleDisplay'].toLowerCase().contains(searchQuery.value.toLowerCase())),
       );
     }
   }
 
-  void toggleUserStatus(int id) {
+  void toggleUserStatus(String id) {
     var index = technicians.indexWhere((tech) => tech['id'] == id);
     if (index != -1) {
       var tech = technicians[index];
@@ -82,13 +85,30 @@ class UserManagementController extends GetxController {
     searchQuery.value = query;
   }
 
+  void updateUser(Map<String, dynamic> updatedUser) {
+    var index = technicians.indexWhere((t) => t['id'] == updatedUser['id']);
+    if (index != -1) {
+      technicians[index] = updatedUser;
+      filterTechnicians();
+    }
+  }
+
+  void onUserTap(Map<String, dynamic> user) {
+    Get.toNamed(AppRoutes.addUser, arguments: user)?.then((result) {
+      if (result != null && result is Map<String, dynamic>) {
+        updateUser(result);
+      } else {
+        loadTechnicians();
+      }
+    });
+  }
+
   void onAddNewTechnician() {
     Get.toNamed(AppRoutes.addUser)?.then((result) {
       if (result != null && result is Map<String, dynamic>) {
-        // Add the new technician to the list
-        technicians.add(result);
-        filterTechnicians();
-        Get.snackbar('Success', 'Technician added successfully!');
+        updateUser(result);
+      } else {
+        loadTechnicians();
       }
     });
   }

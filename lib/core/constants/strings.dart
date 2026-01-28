@@ -98,6 +98,8 @@ class AppStrings {
   static const String optionalNote = 'Optional Note';
   static const String noteHint = 'E.g. Damaged unit return, site transfer...';
   static const String confirmChange = 'Confirm Change';
+  static const String returnToManagement = 'Return to Management';
+  static const String selectLocationToUpdate = 'Select Location to Update';
 
   // Stock Update Success Screen
   static const String stockUpdateSuccess = 'Stock Update Successful';
@@ -190,13 +192,20 @@ class AppStrings {
   static const String addTechnician = 'Add Technician';
   static const String fullName = 'Full Name';
   static const String enterTechniciansFullName = 'Enter technician\'s full name';
-  static const String usernameLabel = 'Username';
-  static const String enterUsername = 'e.g. jdoe_tech';
+  static const String emailLabel = 'Email';
+  static const String enterEmail = 'e.g. jdoe@example.com';
+  static const String departmentLabel = 'Department';
+  static const String enterDepartment = 'e.g. Maintenance';
+  static const String regionLabel = 'Region';
+  static const String enterRegion = 'e.g. North';
+  static const String villeLabel = 'Ville';
+  static const String enterVille = 'e.g. Yaounde';
   static const String temporaryPassword = 'Temporary Password';
   static const String setTemporaryPassword = 'Set temporary password';
   static const String passwordHint = 'The user will be prompted to change this on first login.';
   static const String role = 'Role';
   static const String technicianRole = 'Technician';
+  static const String adminRole = 'Admin';
   static const String saveTechnician = 'Save Technician';
   static const String cancel = 'Cancel';
 

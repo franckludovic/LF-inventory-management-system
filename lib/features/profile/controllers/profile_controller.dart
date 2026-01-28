@@ -35,11 +35,8 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Initialize controllers with current values
-    nameController.text = userName.value;
-    emailController.text = email.value;
-    departmentController.text = department.value;
-    regionController.text = region.value;
+    // Load profile data from API
+    loadProfile();
 
     // Sync user role from UserController
     userRole.value = _userController.userRole.join(', ');
@@ -58,6 +55,32 @@ class ProfileController extends GetxController {
     newPasswordController.dispose();
     confirmPasswordController.dispose();
     super.onClose();
+  }
+
+  // Method to load profile data from API
+  void loadProfile() async {
+    try {
+      final profile = await _userService.getUserProfile(_userController.accessToken.value);
+      userName.value = profile['nom'] ?? userName.value;
+      employeeId.value = profile['id']?.toString() ?? employeeId.value;
+      email.value = profile['email'] ?? email.value;
+      department.value = profile['Department'] ?? department.value;
+      region.value = profile['region'] ?? region.value;
+      joinedDate.value = profile['createdAt'] != null
+          ? DateTime.parse(profile['createdAt']).toString().split(' ')[0]
+          : joinedDate.value;
+
+      // Update text controllers
+      nameController.text = userName.value;
+      emailController.text = email.value;
+      departmentController.text = department.value;
+      regionController.text = region.value;
+
+      // Update UserController profile
+      _userController.setUserProfile(profile);
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to load profile: $e');
+    }
   }
 
   // Method to handle logout
@@ -100,44 +123,59 @@ class ProfileController extends GetxController {
     );
   }
 
-  void editEmail() {
+  void editEmail() async {
     showEditDialog(
       title: 'Edit Email',
       oldValue: email.value,
       controller: emailController,
-      onConfirm: () {
-        email.value = emailController.text.trim();
-        // TODO: Call backend API to update email
-        Get.back();
-        Get.snackbar('Success', 'Email updated successfully');
+      onConfirm: () async {
+        final newEmail = emailController.text.trim();
+        try {
+          await _userService.updateUserProfile(_userController.accessToken.value, {'email': newEmail});
+          email.value = newEmail;
+          Get.back();
+          Get.snackbar('Success', 'Email updated successfully');
+        } catch (e) {
+          Get.snackbar('Error', 'Failed to update email: $e');
+        }
       },
     );
   }
 
-  void editDepartment() {
+  void editDepartment() async {
     showEditDialog(
       title: 'Edit Department',
       oldValue: department.value,
       controller: departmentController,
-      onConfirm: () {
-        department.value = departmentController.text.trim();
-        // TODO: Call backend API to update department
-        Get.back();
-        Get.snackbar('Success', 'Department updated successfully');
+      onConfirm: () async {
+        final newDepartment = departmentController.text.trim();
+        try {
+          await _userService.updateUserProfile(_userController.accessToken.value, {'Department': newDepartment});
+          department.value = newDepartment;
+          Get.back();
+          Get.snackbar('Success', 'Department updated successfully');
+        } catch (e) {
+          Get.snackbar('Error', 'Failed to update department: $e');
+        }
       },
     );
   }
 
-  void editRegion() {
+  void editRegion() async {
     showEditDialog(
       title: 'Edit Region',
       oldValue: region.value,
       controller: regionController,
-      onConfirm: () {
-        region.value = regionController.text.trim();
-        // TODO: Call backend API to update region
-        Get.back();
-        Get.snackbar('Success', 'Region updated successfully');
+      onConfirm: () async {
+        final newRegion = regionController.text.trim();
+        try {
+          await _userService.updateUserProfile(_userController.accessToken.value, {'region': newRegion});
+          region.value = newRegion;
+          Get.back();
+          Get.snackbar('Success', 'Region updated successfully');
+        } catch (e) {
+          Get.snackbar('Error', 'Failed to update region: $e');
+        }
       },
     );
   }
@@ -269,18 +307,22 @@ class ProfileController extends GetxController {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (newPasswordController.text != confirmPasswordController.text) {
                 Get.snackbar('Error', 'Passwords do not match');
                 return;
               }
-              // TODO: Call backend API to update password
-              Get.back();
-              Get.snackbar('Success', 'Password updated successfully');
-              // Clear controllers
-              oldPasswordController.clear();
-              newPasswordController.clear();
-              confirmPasswordController.clear();
+              try {
+                await _userService.changePassword(_userController.accessToken.value, newPasswordController.text);
+                Get.back();
+                Get.snackbar('Success', 'Password updated successfully');
+                // Clear controllers
+                oldPasswordController.clear();
+                newPasswordController.clear();
+                confirmPasswordController.clear();
+              } catch (e) {
+                Get.snackbar('Error', 'Failed to update password: $e');
+              }
             },
             child: const Text('Update'),
           ),

@@ -16,6 +16,13 @@ class StockFilterChips extends StatefulWidget {
 class _StockFilterChipsState extends State<StockFilterChips> {
   String? _selectedFilter;
 
+  @override
+  void initState() {
+    super.initState();
+    _selectedFilter = 'All Alerts'; // Set default selection
+    widget.onFilterSelected(_selectedFilter); // Notify parent of initial selection
+  }
+
   final List<Map<String, dynamic>> _filters = [
     {
       'label': 'All Alerts',
@@ -28,8 +35,8 @@ class _StockFilterChipsState extends State<StockFilterChips> {
       'isPrimary': false,
     },
     {
-      'label': 'Van Storage',
-      'icon': Icons.local_shipping,
+      'label': 'Low Only',
+      'icon': Icons.warning_amber,
       'isPrimary': false,
     },
   ];
@@ -53,14 +60,20 @@ class _StockFilterChipsState extends State<StockFilterChips> {
               child: ElevatedButton.icon(
                 onPressed: () {
                   setState(() {
-                    _selectedFilter = isSelected ? null : filter['label'];
+                    if (isSelected) {
+                      // If clicking the currently selected chip, deselect it and select "All Alerts"
+                      _selectedFilter = 'All Alerts';
+                    } else {
+                      // Select the clicked chip
+                      _selectedFilter = filter['label'];
+                    }
                   });
                   widget.onFilterSelected(_selectedFilter);
                 },
                 icon: Icon(
                   filter['icon'],
                   size: 20,
-                  color: filter['isPrimary'] || isSelected
+                  color: isSelected
                       ? Colors.white
                       : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
                 ),
@@ -68,20 +81,20 @@ class _StockFilterChipsState extends State<StockFilterChips> {
                   filter['label'],
                   style: TextStyle(
                     fontSize: 14,
-                  fontWeight: filter['isPrimary'] ? FontWeight.bold : FontWeight.w500,
-                    color: filter['isPrimary'] || isSelected
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    color: isSelected
                         ? Colors.white
                         : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: filter['isPrimary'] || isSelected
+                  backgroundColor: isSelected
                       ? AppColors.primary
                       : (isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight),
-                  foregroundColor: filter['isPrimary'] || isSelected
+                  foregroundColor: isSelected
                       ? Colors.white
                       : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
-                  side: filter['isPrimary'] || isSelected
+                  side: isSelected
                       ? null
                       : BorderSide(
                           color: isDark ? AppColors.borderCardDark : AppColors.borderCardLight,
@@ -90,7 +103,7 @@ class _StockFilterChipsState extends State<StockFilterChips> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  elevation: filter['isPrimary'] || isSelected ? 2 : 0,
+                  elevation: isSelected ? 2 : 0,
                 ),
               ),
             );

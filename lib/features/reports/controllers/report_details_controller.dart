@@ -1,53 +1,86 @@
 import 'package:get/get.dart';
-import '../../../core/models/report_model.dart';
+import '../services/report_export_service.dart';
 
 class ReportDetailsController extends GetxController {
-  final ReportModel report;
+  // Report data from arguments
+  late List<dynamic> logsData;
+  late DateTime startDate;
+  late DateTime endDate;
+  late String reportType;
 
-  ReportDetailsController({required this.report});
-
-  // Report data
+  // Report summary data
   final RxString reportPeriod = ''.obs;
   final RxInt totalAdditions = 0.obs;
   final RxInt totalRemovals = 0.obs;
+  final RxInt totalRecords = 0.obs;
 
-  // Activity data based on the report
+  // Activity data based on the logs
   final RxList<Map<String, dynamic>> activities = <Map<String, dynamic>>[].obs;
+
+  final ReportExportService _exportService = ReportExportService();
 
   @override
   void onInit() {
     super.onInit();
+    final args = Get.arguments as Map<String, dynamic>;
+    logsData = args['logsData'];
+    startDate = args['startDate'];
+    endDate = args['endDate'];
+    reportType = args['reportType'];
     loadReportData();
   }
 
   void loadReportData() {
-    reportPeriod.value = 'Report for ${report.createdAt.toString()}';
-    totalAdditions.value = report.type.toLowerCase() == 'added' ? report.quantity : 0;
-    totalRemovals.value = report.type.toLowerCase() == 'removed' ? report.quantity : 0;
+    reportPeriod.value = 'Period: ${startDate.toString().split(' ')[0]} to ${endDate.toString().split(' ')[0]}';
+    totalRecords.value = logsData.length;
 
-    activities.assignAll([
-      {
-        'date': report.createdAt.toString(),
-        'part': report.partName,
-        'location': report.locationName,
-        'type': report.type,
-        'qty': '${report.type == 'ADDED' ? '+' : '-'}${report.quantity}',
-        'by': report.userName,
-      },
-    ]);
+    // Calculate totals
+    totalAdditions.value = logsData.where((log) => log['type'] == 'ADDED').fold(0, (sum, log) => sum + (log['quantite'] as int));
+    totalRemovals.value = logsData.where((log) => log['type'] == 'REMOVED').fold(0, (sum, log) => sum + (log['quantite'] as int));
+
+    // Prepare activities list
+    activities.assignAll(logsData.map((log) {
+      return {
+        'date': _safeDate(log['created_at']),
+        'part': log['composant']?['designation'] ?? '-',
+        'location': log['sac']?['nom'] ?? '-',
+        'type': log['type'] ?? '-',
+        'qty': '${log['type'] == 'ADDED' ? '+' : '-'}${log['quantite']}',
+        'by': log['utilisateur']?['nom'] ?? '-',
+      };
+    }).toList());
   }
 
-  void exportPDF() {
-    // TODO: Implement PDF export
-    Get.snackbar('Export', 'PDF export functionality coming soon!');
+  Future<void> exportPDF() async {
+    try {
+      await _exportService.generatePDF(
+        logsData: logsData,
+        startDate: startDate,
+        endDate: endDate,
+      );
+      Get.snackbar('Success', 'PDF report generated successfully');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to generate PDF report');
+    }
   }
 
-  void exportCSV() {
-    // TODO: Implement CSV export
-    Get.snackbar('Export', 'CSV export functionality coming soon!');
+  Future<void> exportCSV() async {
+    try {
+      final file = await _exportService.generateCSV(
+        logsData: logsData,
+      );
+      Get.snackbar('Success', 'CSV saved to ${file.path}');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to generate CSV report');
+    }
   }
 
   void backToDashboard() {
     Get.back();
+  }
+
+  String _safeDate(dynamic raw) {
+    if (raw == null) return '-';
+    return raw.toString().split('T').first;
   }
 }

@@ -23,7 +23,7 @@ class DashboardScreen extends GetView<DashboardController> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(14),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -78,17 +78,7 @@ class DashboardScreen extends GetView<DashboardController> {
                             ),
                           ],
                         ),
-                        TextButton(
-                          onPressed: controller.navigateToLowStockAlerts,
-                          child: Text(
-                            'View All',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
+
                       ],
                     ),
                     const SizedBox(height: 16),
@@ -112,11 +102,12 @@ class DashboardScreen extends GetView<DashboardController> {
                             children: [
                               StockAlertCard(
                                 title: part.designation,
+                                imageUrl: part.imageUrl,
                                 subtitle: 'Only $qty units remaining',
                                 status: isCritical ? 'CRITICAL STOCK' : 'LOW STOCK',
                                 statusColor: isCritical ? AppColors.error : AppColors.warning,
                                 statusIcon: isCritical ? Icons.warning : Icons.inventory_2,
-                                onRestockPressed: () => controller.onRestockPressed(part),
+                                onRestockPressed: () => (),
                               ),
                               const SizedBox(height: 16),
                             ],

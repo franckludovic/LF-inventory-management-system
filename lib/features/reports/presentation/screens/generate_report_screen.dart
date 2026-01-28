@@ -148,11 +148,50 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                       const SizedBox(height: 16),
                       // Technician Name Filter - Only show for admins
                       if (userController.isAdmin)
-                        CustomTextField(
-                          label: AppStrings.technicianName,
-                          hint: 'e.g. John Doe',
-                          controller: controller.technicianNameController,
-                        ),
+                        Obx(() => DropdownButtonFormField<String>(
+                          value: controller.selectedTechnicianId.value.isEmpty ? null : controller.selectedTechnicianId.value,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          ),
+                          style: TextStyle(
+                            color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                            fontSize: 16,
+                          ),
+                          dropdownColor: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
+                          items: controller.technicians.map((technician) {
+                            return DropdownMenuItem<String>(
+                              value: technician.id,
+                              child: Text(technician.nom),
+                            );
+                          }).toList(),
+                          onChanged: controller.updateSelectedTechnicianId,
+                          hint: Text(
+                            'Select Technician',
+                            style: TextStyle(
+                              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            ),
+                          ),
+                        )),
 
                       const SizedBox(height: 32),
 

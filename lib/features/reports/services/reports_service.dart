@@ -1,7 +1,10 @@
 import 'package:lf_project/core/services/api_service.dart';
+import '../../../core/models/user_model.dart';
+import '../../user/services/user_service.dart';
 
 class ReportsService {
   final ApiService _apiService = ApiService();
+  final UserService _userService = UserService();
 
   /// Get all logs for admin
   /// Backend: GET /api/logs/all-logs (admin only)
@@ -74,6 +77,20 @@ class ReportsService {
       }
     } catch (e) {
       throw Exception('Failed to get logs by date: ${e.toString()}');
+    }
+  }
+
+  /// Get all technicians (users with role TECHNICIAN)
+  Future<List<UserModel>> getTechnicians() async {
+    try {
+      final usersData = await _userService.getAllUsers();
+      final technicians = usersData
+          .where((user) => (user['role'] as List<dynamic>).contains('TECHNICIAN'))
+          .map((user) => UserModel.fromMap(user))
+          .toList();
+      return technicians;
+    } catch (e) {
+      throw Exception('Failed to get technicians: ${e.toString()}');
     }
   }
 }

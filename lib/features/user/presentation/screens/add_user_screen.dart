@@ -15,7 +15,6 @@ class AddUserScreen extends GetView<AddUserController> {
     return Scaffold(
       appBar: CustomAppBar(
         title: AppStrings.addTechnician,
-        onProfileTap: () {}, // TODO: Implement profile tap
         showBackButton: true,
       ),
       body: SingleChildScrollView(
@@ -33,12 +32,42 @@ class AddUserScreen extends GetView<AddUserController> {
             ),
             const SizedBox(height: 16),
 
-            // Username Field
+            // Email Field
             _buildFormField(
-              label: AppStrings.usernameLabel,
-              controller: controller.usernameController,
-              hintText: AppStrings.enterUsername,
-              errorText: controller.usernameError,
+              label: AppStrings.emailLabel,
+              controller: controller.emailController,
+              hintText: AppStrings.enterEmail,
+              errorText: controller.emailError,
+              isDark: isDark,
+            ),
+            const SizedBox(height: 16),
+
+            // Department Field
+            _buildFormField(
+              label: AppStrings.departmentLabel,
+              controller: controller.departmentController,
+              hintText: AppStrings.enterDepartment,
+              errorText: controller.departmentError,
+              isDark: isDark,
+            ),
+            const SizedBox(height: 16),
+
+            // Region Field
+            _buildFormField(
+              label: AppStrings.regionLabel,
+              controller: controller.regionController,
+              hintText: AppStrings.enterRegion,
+              errorText: controller.regionError,
+              isDark: isDark,
+            ),
+            const SizedBox(height: 16),
+
+            // Ville Field
+            _buildFormField(
+              label: AppStrings.villeLabel,
+              controller: controller.villeController,
+              hintText: AppStrings.enterVille,
+              errorText: controller.villeError,
               isDark: isDark,
             ),
             const SizedBox(height: 16),
@@ -47,8 +76,12 @@ class AddUserScreen extends GetView<AddUserController> {
             _buildPasswordField(isDark),
             const SizedBox(height: 16),
 
-            // Role Field (Read-Only)
-            _buildReadOnlyField(isDark),
+            // Role Field
+            _buildRoleDropdown(isDark),
+            const SizedBox(height: 16),
+
+            // Block/Unblock User (only in edit mode)
+            if (controller.isEditing.value) _buildBlockUnblockToggle(isDark),
           ],
         ),
       ),
@@ -232,7 +265,7 @@ class AddUserScreen extends GetView<AddUserController> {
     );
   }
 
-  Widget _buildReadOnlyField(bool isDark) {
+  Widget _buildRoleDropdown(bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -245,32 +278,94 @@ class AddUserScreen extends GetView<AddUserController> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        Obx(() => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: isDark ? AppColors.cardBackgroundDark.withOpacity(0.5) : AppColors.cardBackgroundLight.withOpacity(0.5),
+            color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
+            border: Border.all(
+              color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: DropdownButton<String>(
+            value: controller.selectedRole.value,
+            isExpanded: true,
+            underline: const SizedBox(),
+            style: TextStyle(
+              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+              fontSize: 16,
+            ),
+            dropdownColor: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
+            items: [
+              DropdownMenuItem(
+                value: 'Technician',
+                child: Text(AppStrings.technicianRole),
+              ),
+              DropdownMenuItem(
+                value: 'Admin',
+                child: Text(AppStrings.adminRole),
+              ),
+            ],
+            onChanged: (value) {
+              if (value != null) {
+                controller.selectedRole.value = value;
+              }
+            },
+          ),
+        )),
+      ],
+    );
+  }
+
+  Widget _buildBlockUnblockToggle(bool isDark) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'User Status',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
             border: Border.all(
               color: isDark ? AppColors.borderDark : AppColors.borderLight,
             ),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  AppStrings.technicianRole,
-                  style: TextStyle(
-                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                    fontSize: 16,
-                  ),
+              Text(
+                'Block User',
+                style: TextStyle(
+                  color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                  fontSize: 16,
                 ),
               ),
-              Icon(
-                Icons.lock,
-                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                size: 20,
-              ),
+              Obx(() => Switch(
+                value: controller.isUserBlocked.value,
+                onChanged: (value) {
+                  controller.isUserBlocked.value = value;
+                },
+                activeColor: AppColors.primary,
+                activeTrackColor: AppColors.primary.withOpacity(0.3),
+              )),
             ],
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Note: Block/Unblock functionality is not yet implemented in the backend.',
+          style: TextStyle(
+            color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+            fontSize: 12,
           ),
         ),
       ],
@@ -293,9 +388,9 @@ class AddUserScreen extends GetView<AddUserController> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Obx(() => ElevatedButton.icon(
-            onPressed: controller.isFormValid.value ? controller.onSaveTechnician : null,
+            onPressed: controller.isFormValid.value ? controller.onSaveUser : null,
             icon: const Icon(Icons.person_add, size: 20),
-            label: Text(AppStrings.saveTechnician),
+            label: Text(controller.isEditing.value ? 'Update User' : AppStrings.saveTechnician),
             style: ElevatedButton.styleFrom(
               backgroundColor: controller.isFormValid.value ? AppColors.primary : AppColors.textMutedLight,
               foregroundColor: Colors.white,

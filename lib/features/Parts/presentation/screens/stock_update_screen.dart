@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../controllers/stock_update_controller.dart';
 import '../../../../core/constants/colors.dart';
-import '../../../../core/widgets/custom_search_field.dart';
-import '../../../../core/widgets/custom_dropdown.dart';
+import '../../../../core/constants/strings.dart';
 import '../../../../core/widgets/quantity_selector.dart';
 import '../../../../core/widgets/action_toggle.dart';
 import '../../../../core/widgets/custom_text_area.dart';
@@ -41,98 +40,280 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Select Part TextField
-                  Obx(() => CustomSearchField(
-                    label: 'SELECT PART',
-                    hint: 'Search elevator part...',
-                    currentStock: controller.selectedPart != null
-                        ? 'Current Stock: ${controller.selectedPart!.quantity}'
-                        : 'No part selected',
-                    controller: controller.searchController,
-                  )),
-                  const SizedBox(height: 24),
+              child: Obx(() {
+                if (controller.selectedPart.value == null) {
+                  return const Center(
+                    child: Text('No part selected'),
+                  );
+                }
 
-                  // Select Bag Dropdown
-                  Obx(() => CustomDropdown(
-                    label: 'STORAGE BAG',
-                    value: controller.selectedBag.value,
-                    items: controller.bagOptions.toList(),
-                    onChanged: controller.selectBag,
-                  )),
-                  const SizedBox(height: 16),
+                final part = controller.selectedPart.value!;
 
-                  // Add Location Button
-                  Obx(() => SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: controller.toggleAddLocation,
-                      icon: Icon(
-                        controller.showAddLocation.value ? Icons.remove : Icons.add,
-                        color: AppColors.primary,
-                      ),
-                      label: Text(
-                        'Add Location',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Part Information Grid
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isDark ? AppColors.borderDark : AppColors.borderLight,
                         ),
                       ),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.primary),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                      child: Column(
+                        children: [
+                          // Part Image
+                          Center(
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                image: DecorationImage(
+                                  image: NetworkImage(part.imageUrl),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          // 2x2 Grid for Part Info
+                          GridView.count(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 5,
+                            childAspectRatio: 3,
+                            children: [
+                              // Part Name
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Part Name',
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    part.designation,
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+
+                              // Designation
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Designation',
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    part.reference ?? 'N/A',
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+
+                              // Manufacturer
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Manufacturer',
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(  
+                                    part.fabriquant,
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+
+                              // Total Stock
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    AppStrings.totalStock,
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 1.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    '${part.quantity} ${AppStrings.units}',
+                                    style: TextStyle(
+                                      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  )),
+                    const SizedBox(height: 24),
 
-                  // Additional Location Dropdown (shown when Add Location is clicked)
-                  Obx(() => controller.showAddLocation.value ? Column(
-                    children: [
-                      const SizedBox(height: 16),
-                      CustomDropdown(
-                        label: 'ADDITIONAL LOCATION',
-                        value: controller.selectedAdditionalLocation.value,
-                        items: controller.availableLocations.toList(),
-                        onChanged: controller.selectAdditionalLocation,
+                    // Location Breakdown
+                    Text(
+                      AppStrings.locationBreakdown,
+                      style: TextStyle(
+                        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ) : const SizedBox()),
-                  const SizedBox(height: 24),
+                    ),
+                    const SizedBox(height: 16),
 
-                  // Quantity Field
-                  Obx(() => QuantitySelector(
-                    label: 'QUANTITY',
-                    quantity: controller.quantity.value,
-                    onIncrement: controller.incrementQuantity,
-                    onDecrement: controller.decrementQuantity,
-                  )),
-                  const SizedBox(height: 32),
+                    // Location Grid
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 5,
+                        mainAxisSpacing: 5,
+                        childAspectRatio: 1.5,
+                      ),
+                      itemCount: controller.partLocations.length,
+                      itemBuilder: (context, index) {
+                        final location = controller.partLocations[index];
+                        final locationName = location.keys.first;
+                        final quantity = location.values.first;
 
-                  // Action Toggle (Add / Remove)
-                  Obx(() => ActionToggle(
-                    isAddStock: controller.isAddStock.value,
-                    onToggle: controller.toggleAction,
-                  )),
-                  const SizedBox(height: 24),
+                        return Obx(() => GestureDetector(
+                          onTap: () => controller.selectLocation(locationName),
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: controller.selectedLocation.value == locationName
+                                  ? AppColors.primary.withOpacity(0.1)
+                                  : (isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: controller.selectedLocation.value == locationName
+                                    ? AppColors.primary
+                                    : (isDark ? AppColors.borderDark : AppColors.borderLight),
+                                width: controller.selectedLocation.value == locationName ? 1.5 : 0.8,
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  locationName,
+                                  style: TextStyle(
+                                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Qty: $quantity',
+                                  style: TextStyle(
+                                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Icon(
+                                  controller.selectedLocation.value == locationName
+                                      ? Icons.check_circle
+                                      : Icons.radio_button_unchecked,
+                                  size: 16,
+                                  color: controller.selectedLocation.value == locationName
+                                      ? AppColors.primary
+                                      : (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ));
+                      },
+                    ),
+                    const SizedBox(height: 24),
 
-                  // Optional Note
-                  CustomTextArea(
-                    label: 'OPTIONAL NOTE',
-                    hint: 'E.g. Damaged unit return, site transfer...',
-                    controller: controller.noteController,
-                  ),
-                  const SizedBox(height: 80), // Space for bottom button
-                ],
-              ),
+                    // Quantity Field
+                    QuantitySelector(
+                      label: AppStrings.quantity,
+                      quantity: controller.quantity.value,
+                      onIncrement: controller.incrementQuantity,
+                      onDecrement: controller.decrementQuantity,
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Action Toggle (Add / Remove)
+                    ActionToggle(
+                      isAddStock: controller.isAddStock.value,
+                      onToggle: controller.toggleAction,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Optional Note
+                    CustomTextArea(
+                      label: AppStrings.optionalNote,
+                      hint: AppStrings.noteHint,
+                      controller: controller.noteController,
+                    ),
+                    const SizedBox(height: 80), // Space for bottom buttons
+                  ],
+                );
+              }),
             ),
           ),
 
-          // Footer Button
+          // Footer Buttons
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -143,31 +324,57 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                 ),
               ),
             ),
-            child: ElevatedButton(
-              onPressed: controller.confirmChange,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 56),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+            child: Column(
+              children: [
+                // Confirm Change Button
+                ElevatedButton(
+                  onPressed: controller.confirmChange,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 56),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.check_circle, size: 24),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppStrings.confirmChange,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                elevation: 4,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.check_circle, size: 24),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Confirm Change',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                const SizedBox(height: 12),
+
+                // Return to Management Button
+                OutlinedButton(
+                  onPressed: () => Get.back(),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.primary),
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                ],
-              ),
+                  child: Text(
+                    AppStrings.returnToManagement,
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

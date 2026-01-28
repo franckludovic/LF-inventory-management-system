@@ -4,92 +4,38 @@ import '../../../core/models/part_model.dart';
 import '../services/parts_service.dart';
 import '../../../core/controllers/user_controller.dart';
 import '../../../core/constants/strings.dart';
-import '../../../features/location/services/location_service.dart';
 
 class StockUpdateController extends GetxController {
+  final PartModel? initialPart;
 
-  final TextEditingController searchController = TextEditingController();
+  StockUpdateController({this.initialPart});
+
   final TextEditingController noteController = TextEditingController();
 
   // Part selection
-  PartModel? selectedPart;
+  final Rx<PartModel?> selectedPart = Rx<PartModel?>(null);
   final RxBool isLoading = false.obs;
 
   final PartsService _partsService = PartsService();
-  final LocationService _locationService = LocationService();
 
-  final RxString selectedBag = RxString('');
+  final RxString selectedLocation = RxString('');
   final RxInt quantity = 1.obs;
   final RxBool isAddStock = true.obs;
-  final RxBool showAddLocation = false.obs;
-  final RxString selectedAdditionalLocation = RxString('');
 
-  final RxList<String> bagOptions = <String>[].obs;
-  final RxList<String> availableLocations = <String>[].obs;
+  final RxList<Map<String, String>> partLocations = <Map<String, String>>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Check if a part was passed as argument
-    final part = Get.arguments as PartModel?;
+    // Check if a part was passed as argument or initial part
+    final part = initialPart ?? Get.arguments as PartModel?;
     if (part != null) {
       selectPart(part);
     }
-    loadLocations();
   }
 
-  Future<void> loadLocations() async {
-    try {
-      final locations = await _locationService.getAllLocations();
-
-      // Format bag options with description if available
-      bagOptions.assignAll(locations.map((loc) => '${loc['nom']} - ${loc['description'] ?? 'No description'}').toList());
-
-      // Format available locations
-      availableLocations.assignAll(locations.map((loc) => loc['nom'] as String).toList());
-
-      // Set selected bag if a part was passed
-      if (selectedPart != null) {
-        final locationName = selectedPart!.location.split(' (')[0];
-        final matchingOption = bagOptions.firstWhere(
-          (option) => option.startsWith(locationName),
-          orElse: () => locationName,
-        );
-        selectedBag.value = matchingOption;
-      }
-    } catch (e) {
-      // Fallback to dummy data if API fails
-      bagOptions.assignAll([
-        'Sac 1 - Main Inventory',
-        'Sac 2 - Service Van',
-        'Sac 3 - Emergency Kit',
-      ]);
-
-      availableLocations.assignAll([
-        'Sac 3',
-        'Sac 6',
-        'Sac 1',
-        'Bin 12A',
-        'Service Truck A',
-        'Sac 9',
-        'HQ Depot',
-        'External Warehouse',
-      ]);
-
-      // Set selected bag if a part was passed
-      if (selectedPart != null) {
-        final locationName = selectedPart!.location.split(' (')[0];
-        final matchingOption = bagOptions.firstWhere(
-          (option) => option.startsWith(locationName),
-          orElse: () => locationName,
-        );
-        selectedBag.value = matchingOption;
-      }
-    }
-  }
-
-  void selectBag(String? value) {
-    selectedBag.value = value ?? '';
+  void selectLocation(String location) {
+    selectedLocation.value = location;
   }
 
   void incrementQuantity() {
@@ -106,29 +52,19 @@ class StockUpdateController extends GetxController {
     isAddStock.value = isAdd;
   }
 
-  void toggleAddLocation() {
-    showAddLocation.value = !showAddLocation.value;
-  }
-
-  void selectAdditionalLocation(String? value) {
-    selectedAdditionalLocation.value = value ?? '';
-  }
-
   void selectPart(PartModel part) {
-    selectedPart = part;
-    // Extract the first location name from the location string (e.g., "sac 1 (2)" -> "sac 1")
-    final locationName = part.location.split(' (')[0];
-    // Find the matching bag option from the loaded locations
-    final matchingOption = bagOptions.firstWhere(
-      (option) => option.startsWith(locationName),
-      orElse: () => locationName,
-    );
-    selectedBag.value = matchingOption;
+    selectedPart.value = part;
+    partLocations.assignAll(part.locations ?? []);
   }
 
   Future<void> confirmChange() async {
-    if (selectedPart == null) {
+    if (selectedPart.value == null) {
       Get.snackbar('Error', 'Please select a part first');
+      return;
+    }
+
+    if (selectedLocation.value.isEmpty) {
+      Get.snackbar('Error', 'Please select a location');
       return;
     }
 
@@ -144,7 +80,8 @@ class StockUpdateController extends GetxController {
       final userController = Get.find<UserController>();
       final result = await _partsService.updateStock(
         userController.accessToken.value,
-        partId: selectedPart!.id ?? '',
+        partId: selectedPart.value!.id ?? '',
+        sacName: selectedLocation.value,
         quantity: quantity.value,
         operation: operation,
         note: noteController.text.trim().isNotEmpty
@@ -153,79 +90,17 @@ class StockUpdateController extends GetxController {
       );
 
       Get.snackbar('Success', 'Stock updated successfully');
-      await Future.delayed(const Duration(milliseconds: 100));
-      await Get.offNamed('/stock-update-success');
+      // Stay on the page instead of navigating away
     } catch (e) {
       final errorMessage = e.toString();
-      if (errorMessage.contains('Exceeds max capacity')) {
-        await _showCapacityErrorModal();
-      } else {
-        Get.snackbar('Error', 'Failed to update stock: $errorMessage');
-      }
+      Get.snackbar('Error', 'Failed to update stock: $errorMessage');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> _showCapacityErrorModal() async {
-    try {
-      final sacName = selectedBag.value.split(' - ')[0]; // e.g., 'Sac 1'
-      final locations = await _locationService.getAllLocations();
-      final sac = locations.cast<Map<String, dynamic>?>().firstWhere(
-        (s) => s?['nom'] == sacName,
-        orElse: () => null,
-      );
-      if (sac == null) {
-        Get.snackbar('Error', 'Failed to get location details');
-        return;
-      }
-      final maxAllowed = sac['capaciteMax'] - sac['quantite_total'];
-
-      await Future.delayed(const Duration(milliseconds: 100));
-      Get.dialog(
-        AlertDialog(
-          title: Text(AppStrings.stockUpdateError),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(AppStrings.exceedsMaxCapacity),
-              const SizedBox(height: 10),
-              Text(
-                '${AppStrings.maxAllowedToAdd} $maxAllowed ${AppStrings.unitsLower}',
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: Text(AppStrings.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                Get.back();
-                // Choose another location - perhaps open location selector
-                // For now, just close
-              },
-              child: Text(AppStrings.chooseAnotherLocation),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Get.back();
-                quantity.value = maxAllowed;
-              },
-              child: Text(AppStrings.adjustQuantity),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to load location details: $e');
-    }
-  }
-
   @override
   void onClose() {
-    searchController.dispose();
     noteController.dispose();
     super.onClose();
   }

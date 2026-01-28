@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/strings.dart';
+import '../services/user_service.dart';
 
 class AddUserController extends GetxController {
   // Form controllers
   final fullNameController = TextEditingController();
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
+  final departmentController = TextEditingController();
+  final regionController = TextEditingController();
+  final villeController = TextEditingController();
   final passwordController = TextEditingController();
+
+  // Role selection
+  var selectedRole = 'Technician'.obs;
+
+  // Editing mode
+  var isEditing = false.obs;
+  var userToEdit = <String, dynamic>{}.obs;
+  var isUserBlocked = false.obs;
 
   // Observable variables for form validation
   var isPasswordVisible = false.obs;
@@ -14,23 +26,40 @@ class AddUserController extends GetxController {
 
   // Form validation
   var fullNameError = ''.obs;
-  var usernameError = ''.obs;
+  var emailError = ''.obs;
+  var departmentError = ''.obs;
+  var regionError = ''.obs;
+  var villeError = ''.obs;
   var passwordError = ''.obs;
+
+  final UserService _userService = UserService();
 
   @override
   void onInit() {
     super.onInit();
     // Listen to form changes for validation
     fullNameController.addListener(_validateForm);
-    usernameController.addListener(_validateForm);
+    emailController.addListener(_validateForm);
+    departmentController.addListener(_validateForm);
+    regionController.addListener(_validateForm);
+    villeController.addListener(_validateForm);
     passwordController.addListener(_validateForm);
+
+    // Check if editing
+    final args = Get.arguments;
+    if (args != null && args is Map<String, dynamic>) {
+      loadUserForEditing(args);
+    }
   }
 
   @override
   void onClose() {
     // Dispose controllers
     fullNameController.dispose();
-    usernameController.dispose();
+    emailController.dispose();
+    departmentController.dispose();
+    regionController.dispose();
+    villeController.dispose();
     passwordController.dispose();
     super.onClose();
   }
@@ -45,21 +74,40 @@ class AddUserController extends GetxController {
       fullNameError.value = '';
     }
 
-    // Validate username
-    if (usernameController.text.trim().isEmpty) {
-      usernameError.value = 'Username is required';
-    } else if (usernameController.text.trim().length < 3) {
-      usernameError.value = 'Username must be at least 3 characters';
-    } else if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(usernameController.text.trim())) {
-      usernameError.value = 'Username can only contain letters, numbers, and underscores';
+    // Validate email
+    if (emailController.text.trim().isEmpty) {
+      emailError.value = 'Email is required';
+    } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text.trim())) {
+      emailError.value = 'Enter a valid email address';
     } else {
-      usernameError.value = '';
+      emailError.value = '';
+    }
+
+    // Validate department
+    if (departmentController.text.trim().isEmpty) {
+      departmentError.value = 'Department is required';
+    } else {
+      departmentError.value = '';
+    }
+
+    // Validate region
+    if (regionController.text.trim().isEmpty) {
+      regionError.value = 'Region is required';
+    } else {
+      regionError.value = '';
+    }
+
+    // Validate ville
+    if (villeController.text.trim().isEmpty) {
+      villeError.value = 'Ville is required';
+    } else {
+      villeError.value = '';
     }
 
     // Validate password
-    if (passwordController.text.isEmpty) {
+    if (!isEditing.value && passwordController.text.isEmpty) {
       passwordError.value = 'Password is required';
-    } else if (passwordController.text.length < 6) {
+    } else if (passwordController.text.isNotEmpty && passwordController.text.length < 6) {
       passwordError.value = 'Password must be at least 6 characters';
     } else {
       passwordError.value = '';
@@ -67,18 +115,24 @@ class AddUserController extends GetxController {
 
     // Check if form is valid
     isFormValid.value = fullNameError.value.isEmpty &&
-                       usernameError.value.isEmpty &&
+                       emailError.value.isEmpty &&
+                       departmentError.value.isEmpty &&
+                       regionError.value.isEmpty &&
+                       villeError.value.isEmpty &&
                        passwordError.value.isEmpty &&
                        fullNameController.text.trim().isNotEmpty &&
-                       usernameController.text.trim().isNotEmpty &&
-                       passwordController.text.isNotEmpty;
+                       emailController.text.trim().isNotEmpty &&
+                       departmentController.text.trim().isNotEmpty &&
+                       regionController.text.trim().isNotEmpty &&
+                       villeController.text.trim().isNotEmpty &&
+                       (isEditing.value || passwordController.text.isNotEmpty);
   }
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
-  void onSaveTechnician() {
+  Future<void> onSaveTechnician() async {
     if (!isFormValid.value) {
       Get.snackbar(
         'Validation Error',
@@ -90,28 +144,157 @@ class AddUserController extends GetxController {
       return;
     }
 
-    // Create technician data
-    final technicianData = {
-      'name': fullNameController.text.trim(),
-      'username': usernameController.text.trim(),
-      'password': passwordController.text,
-      'role': AppStrings.technicianRole,
-      'status': 'active',
-      'avatar': 'https://via.placeholder.com/150', // Default avatar
-    };
+    try {
+      // Determine role based on selection
+      List<String> role = selectedRole.value == 'Admin' ? ["ROLE_ADMIN"] : ["ROLE_TECHNICIAN"];
 
-    // TODO: Call API to save technician
-    // For now, just show success message and navigate back
-    Get.snackbar(
-      'Success',
-      'Technician added successfully!',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
+      // Call API to create user
+      await _userService.createUser(
+        nom: fullNameController.text.trim(),
+        email: emailController.text.trim(),
+        motDePasse: passwordController.text,
+        department: departmentController.text.trim(),
+        region: regionController.text.trim(),
+        ville: villeController.text.trim(),
+        role: role,
+      );
 
-    // Navigate back to user management
-    Get.back(result: technicianData);
+      Get.snackbar(
+        'Success',
+        'User added successfully!',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+
+      // Navigate back to user management
+      Get.back();
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to add user: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  void loadUserForEditing(Map<String, dynamic> user) {
+    isEditing.value = true;
+    userToEdit.value = user;
+
+    fullNameController.text = user['nom'] ?? '';
+    emailController.text = user['email'] ?? '';
+    departmentController.text = user['Department'] ?? '';
+    regionController.text = user['region'] ?? '';
+    villeController.text = user['ville'] ?? '';
+
+    // Set role
+    if (user['role'] is List && user['role'].isNotEmpty) {
+      String roleStr = user['role'][0];
+      selectedRole.value = roleStr.contains('ADMIN') ? 'Admin' : 'Technician';
+    }
+
+    // Set blocked status (assuming 'status' field exists, default to false if not)
+    isUserBlocked.value = user['status'] == 'blocked';
+
+    // Password is not pre-filled for security
+    _validateForm();
+  }
+
+  Future<void> onSaveUser() async {
+    if (!isFormValid.value) {
+      Get.snackbar(
+        'Validation Error',
+        'Please fill in all required fields correctly',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    try {
+      if (isEditing.value) {
+        // Update user
+        await _userService.updateUser(
+          userToEdit['id'],
+          {
+            'nom': fullNameController.text.trim(),
+            'Department': departmentController.text.trim(),
+            'region': regionController.text.trim(),
+            'ville': villeController.text.trim(),
+          },
+        );
+
+        // Note: Block/Unblock functionality not implemented in backend yet
+        // The isUserBlocked toggle is for UI only
+
+        Get.snackbar(
+          'Success',
+          'User updated successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        // Return updated user data to update the list
+        final updatedUser = {
+          ...userToEdit,
+          'nom': fullNameController.text.trim(),
+          'email': emailController.text.trim(),
+          'Department': departmentController.text.trim(),
+          'region': regionController.text.trim(),
+          'ville': villeController.text.trim(),
+          'role': selectedRole.value == 'Admin' ? ["ROLE_ADMIN"] : ["ROLE_TECHNICIAN"],
+          'status': isUserBlocked.value ? 'blocked' : 'active',
+        };
+        Get.back(result: updatedUser);
+      } else {
+        // Create user
+        List<String> role = selectedRole.value == 'Admin' ? ["ROLE_ADMIN"] : ["ROLE_TECHNICIAN"];
+
+        await _userService.createUser(
+          nom: fullNameController.text.trim(),
+          email: emailController.text.trim(),
+          motDePasse: passwordController.text,
+          department: departmentController.text.trim(),
+          region: regionController.text.trim(),
+          ville: villeController.text.trim(),
+          role: role,
+        );
+
+        Get.snackbar(
+          'Success',
+          'User added successfully!',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        // Return new user data to add to the list
+        final newUser = {
+          'id': DateTime.now().millisecondsSinceEpoch, // Temporary ID
+          'nom': fullNameController.text.trim(),
+          'email': emailController.text.trim(),
+          'Department': departmentController.text.trim(),
+          'region': regionController.text.trim(),
+          'ville': villeController.text.trim(),
+          'role': role,
+          'status': 'active',
+        };
+        Get.back(result: newUser);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to ${isEditing.value ? 'update' : 'add'} user: $e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
   }
 
   void onCancel() {

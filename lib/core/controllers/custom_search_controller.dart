@@ -23,6 +23,8 @@ class CustomSearchController extends GetxController {
   final List<String> statusOptions = const [
     'All',
     'In Stock',
+    'Low Stock',
+    'Critical Stock',
     'Out of Stock',
   ];
 
@@ -98,10 +100,13 @@ class CustomSearchController extends GetxController {
               part.designation.toLowerCase().contains(query) ||
               (part.reference?.toLowerCase().contains(query) ?? false);
 
+      final quantity = int.parse(part.quantity);
       final matchesStatus =
           selectedStatus.value == 'All' ||
-              (selectedStatus.value == 'In Stock' && !part.isLowStock) ||
-              (selectedStatus.value == 'Out of Stock' && part.isLowStock);
+              (selectedStatus.value == 'In Stock' && quantity > 2) ||
+              (selectedStatus.value == 'Low Stock' && quantity > 2 && quantity < 5) ||
+              (selectedStatus.value == 'Critical Stock' && quantity <= 2 && quantity > 0) ||
+              (selectedStatus.value == 'Out of Stock' && quantity == 0);
 
       final matchesCompany =
           selectedCompany.value == 'All' ||

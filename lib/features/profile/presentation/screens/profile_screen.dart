@@ -206,18 +206,11 @@ class ProfileScreen extends GetView<ProfileController> {
                     child: Column(
                       children: [
                         ProfileListItem(
-                          icon: Icons.settings,
-                          title: 'Preferences',
-                          subtitle: '',
-                          showChevron: true,
-                          onTap: controller.navigateToPreferences,
-                        ),
-                        ProfileListItem(
                           icon: Icons.security,
-                          title: 'Security & Password',
+                          title: 'Change Password',
                           subtitle: '',
                           showChevron: true,
-                          onTap: controller.navigateToSecurity,
+                          onTap: controller.updatePassword,
                         ),
                       ],
                     ),
@@ -251,15 +244,6 @@ class ProfileScreen extends GetView<ProfileController> {
               ),
             ),
             const SizedBox(height: 16),
-            // Version info
-            Text(
-              'Version 2.4.1 (Build 882)',
-              style: TextStyle(
-                fontSize: 12,
-                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-              ),
-            ),
-            const SizedBox(height: 32),
           ],
         ),
       ),

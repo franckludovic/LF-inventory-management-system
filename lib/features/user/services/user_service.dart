@@ -28,7 +28,7 @@ class UserService {
     required String department,
     required String region,
     required String ville,
-    required String role,
+    required List<String> role,
   }) async {
     try {
       final data = {
@@ -98,6 +98,21 @@ class UserService {
       }
     } catch (e) {
       throw Exception('Failed to update user profile: ${e.toString()}');
+    }
+  }
+
+  /// Update user data
+  Future<Map<String, dynamic>> updateUser(String userId, Map<String, dynamic> data) async {
+    try {
+      final response = await _apiService.patch('/api/users/update-other-data/$userId', data: data);
+
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception(response.data['Error'] ?? 'Failed to update user');
+      }
+    } catch (e) {
+      throw Exception('Failed to update user: ${e.toString()}');
     }
   }
 
