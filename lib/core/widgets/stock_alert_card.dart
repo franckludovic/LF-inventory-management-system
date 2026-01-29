@@ -98,7 +98,7 @@ class StockAlertCard extends StatelessWidget {
               border: Border.all(
                 color: isDark ? AppColors.borderCardDark : AppColors.borderCardLight,
               ),
-              image: imageUrl != null
+              image: imageUrl != null && imageUrl!.isNotEmpty && Uri.tryParse(imageUrl!)?.hasScheme == true
                   ? DecorationImage(
                       image: NetworkImage(imageUrl!),
                       fit: BoxFit.cover,

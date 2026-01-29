@@ -32,15 +32,31 @@ class TechnicianListItem extends GetView<UserManagementController> {
                 height: 48,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: NetworkImage(technician['avatar']),
-                    fit: BoxFit.cover,
-                  ),
+                  color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
                   border: Border.all(
                     color: isDark ? AppColors.borderCardDark : AppColors.borderCardLight,
                     width: 1,
                   ),
                 ),
+                child: technician['avatar'] != null && technician['avatar'].toString().isNotEmpty && Uri.tryParse(technician['avatar'].toString())?.hasScheme == true
+                    ? ClipOval(
+                        child: Image.network(
+                          technician['avatar'],
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.person,
+                              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                              size: 24,
+                            );
+                          },
+                        ),
+                      )
+                    : Icon(
+                        Icons.person,
+                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        size: 24,
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(

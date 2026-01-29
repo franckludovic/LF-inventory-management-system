@@ -1,86 +1,110 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../../../core/constants/strings.dart';
 import '../services/report_export_service.dart';
 
 class ReportDetailsController extends GetxController {
-  // Report data from arguments
-  late List<dynamic> logsData;
-  late DateTime startDate;
-  late DateTime endDate;
-  late String reportType;
+  // ─────────────────── Observables ───────────────────
+  final reportPeriod = ''.obs;
+  final totalAdditions = 0.obs;
+  final totalRemovals = 0.obs;
+  final totalRecords = 0.obs;
 
-  // Report summary data
-  final RxString reportPeriod = ''.obs;
-  final RxInt totalAdditions = 0.obs;
-  final RxInt totalRemovals = 0.obs;
-  final RxInt totalRecords = 0.obs;
+  final activities = <Map<String, dynamic>>[].obs;
 
-  // Activity data based on the logs
-  final RxList<Map<String, dynamic>> activities = <Map<String, dynamic>>[].obs;
-
+  // ─────────────────── Services ───────────────────
   final ReportExportService _exportService = ReportExportService();
 
+  // ─────────────────── Lifecycle ───────────────────
   @override
   void onInit() {
     super.onInit();
-    final args = Get.arguments as Map<String, dynamic>;
-    logsData = args['logsData'];
-    startDate = args['startDate'];
-    endDate = args['endDate'];
-    reportType = args['reportType'];
-    loadReportData();
+    _loadArguments();
   }
 
-  void loadReportData() {
-    reportPeriod.value = 'Period: ${startDate.toString().split(' ')[0]} to ${endDate.toString().split(' ')[0]}';
-    totalRecords.value = logsData.length;
+  // ─────────────────── Data Loader ───────────────────
+  void _loadArguments() {
+    final args = Get.arguments;
 
-    // Calculate totals
-    totalAdditions.value = logsData.where((log) => log['type'] == 'ADDED').fold(0, (sum, log) => sum + (log['quantite'] as int));
-    totalRemovals.value = logsData.where((log) => log['type'] == 'REMOVED').fold(0, (sum, log) => sum + (log['quantite'] as int));
+    if (args == null || args['logsData'] == null) {
+      Get.snackbar('Error', 'No report data provided');
+      Get.back();
+      return;
+    }
 
-    // Prepare activities list
-    activities.assignAll(logsData.map((log) {
-      return {
-        'date': _safeDate(log['created_at']),
-        'part': log['composant']?['designation'] ?? '-',
-        'location': log['sac']?['nom'] ?? '-',
-        'type': log['type'] ?? '-',
-        'qty': '${log['type'] == 'ADDED' ? '+' : '-'}${log['quantite']}',
-        'by': log['utilisateur']?['nom'] ?? '-',
-      };
-    }).toList());
+    final List logs = args['logsData'];
+    final DateTime startDate = args['startDate'];
+    final DateTime endDate = args['endDate'];
+
+    _setReportPeriod(startDate, endDate);
+    _processLogs(logs);
   }
 
+  void _setReportPeriod(DateTime start, DateTime end) {
+    final formatter = DateFormat('dd MMM yyyy');
+    reportPeriod.value =
+        '${formatter.format(start)} - ${formatter.format(end)}';
+  }
+
+  void _processLogs(List logs) {
+    int additions = 0;
+    int removals = 0;
+
+    final processedActivities = <Map<String, dynamic>>[];
+
+    for (final log in logs) {
+      final qty = (log['quantite'] ?? 0) as int;
+      final type = log['type'] ?? '';
+
+      if (type.toString().toLowerCase().contains('add')) {
+        additions += qty;
+      } else {
+        removals += qty.abs();
+      }
+
+      processedActivities.add({
+        'date': log['date'] ?? '',
+        'part': log['composant']?['designation'] ?? '—',
+        'location': log['emplacement']?['nom'] ?? '',
+        'type': type,
+        'qty': qty,
+        'by': log['utilisateur']?['nom'] ?? '',
+      });
+    }
+
+    totalAdditions.value = additions;
+    totalRemovals.value = removals;
+    totalRecords.value = processedActivities.length;
+
+    activities.assignAll(processedActivities);
+  }
+
+  // ─────────────────── Actions ───────────────────
   Future<void> exportPDF() async {
     try {
-      await _exportService.generatePDF(
-        logsData: logsData,
-        startDate: startDate,
-        endDate: endDate,
+      await _exportService.exportPDF(
+        activities: activities,
+        reportPeriod: reportPeriod.value,
+        totalAdditions: totalAdditions.value,
+        totalRemovals: totalRemovals.value,
       );
-      Get.snackbar('Success', 'PDF report generated successfully');
+
+      Get.snackbar('Success', AppStrings.exportPDFSuccess);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to generate PDF report');
+      Get.snackbar('Error', 'Failed to export PDF');
     }
   }
 
   Future<void> exportCSV() async {
     try {
-      final file = await _exportService.generateCSV(
-        logsData: logsData,
-      );
-      Get.snackbar('Success', 'CSV saved to ${file.path}');
+      await _exportService.exportCSV(activities);
+      Get.snackbar('Success', AppStrings.exportCSVSuccess);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to generate CSV report');
+      Get.snackbar('Error', 'Failed to export CSV');
     }
   }
 
   void backToDashboard() {
-    Get.back();
-  }
-
-  String _safeDate(dynamic raw) {
-    if (raw == null) return '-';
-    return raw.toString().split('T').first;
+    Get.offAllNamed('/dashboard');
   }
 }

@@ -134,6 +134,7 @@ class AppStrings {
   static const String reportPeriod = 'Report Period';
   static const String totalAdditions = 'Total Additions';
   static const String totalRemovals = 'Total Removals';
+  static const String totalRecords = 'Total Records';
   static const String activityDetails = 'Activity Details';
   static const String detailedBreakdown = 'Detailed breakdown of all stock movements';
   static const String date = 'Date';
@@ -146,7 +147,15 @@ class AppStrings {
   static const String showingTransactions = 'Showing 5 of 57 transactions';
   static const String exportPDF = 'Export PDF';
   static const String exportCSV = 'Export CSV';
+  static const String exportPDFSuccess = 'PDF exported successfully';
+  static const String exportCSVSuccess = 'CSV exported successfully';
   static const String backToDashboard = 'Back to Dashboard';
+
+  // Additional Report Types
+  static const String partSpecificReport = 'Part-Specific Report';
+  static const String technicianReport = 'Technician Report';
+  static const String stockActivityReport = 'Stock Activity Report';
+  static const String selectTechnician = 'Select Technician';
 
   // Parts Management Screen
   static const String partsManagement = 'Parts Management';

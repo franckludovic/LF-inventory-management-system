@@ -71,11 +71,28 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                               height: 100,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
-                                image: DecorationImage(
-                                  image: NetworkImage(part.imageUrl),
-                                  fit: BoxFit.cover,
-                                ),
+                                color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
                               ),
+                              child: part.imageUrl != null && part.imageUrl.isNotEmpty && Uri.tryParse(part.imageUrl)?.hasScheme == true
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        part.imageUrl,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Icon(
+                                            Icons.inventory,
+                                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                            size: 32,
+                                          );
+                                        },
+                                      ),
+                                    )
+                                  : Icon(
+                                      Icons.inventory,
+                                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                      size: 32,
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 10),

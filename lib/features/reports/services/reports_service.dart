@@ -80,12 +80,12 @@ class ReportsService {
     }
   }
 
-  /// Get all technicians (users with role TECHNICIAN)
+  /// Get all technicians (users with role ROLE_TECHNICIAN)
   Future<List<UserModel>> getTechnicians() async {
     try {
       final usersData = await _userService.getAllUsers();
       final technicians = usersData
-          .where((user) => (user['role'] as List<dynamic>).contains('TECHNICIAN'))
+          .where((user) => (user['role'] as List<dynamic>).contains('ROLE_TECHNICIAN'))
           .map((user) => UserModel.fromMap(user))
           .toList();
       return technicians;

@@ -51,7 +51,7 @@ class PartCardWidget extends StatelessWidget {
               ),
               image: part.imageUrl != null && part.imageUrl.isNotEmpty
                 ? DecorationImage(
-                    image: NetworkImage(part.imageUrl),
+                    image: NetworkImage(part.imageUrl.isNotEmpty && Uri.tryParse(part.imageUrl)?.hasScheme == true ? part.imageUrl : 'https://via.placeholder.com/150'),
                     fit: BoxFit.cover,
                   )
                 : null,

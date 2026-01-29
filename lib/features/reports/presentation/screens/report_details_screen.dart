@@ -43,15 +43,15 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                     onPressed: () => Get.back(),
                   ),
                   Expanded(
-                    child: Text(
-                      AppStrings.weeklyStockActivityReport,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                      child: Text(
+                            AppStrings.stockActivityReport,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                   ),
                   IconButton(
                     icon: Icon(

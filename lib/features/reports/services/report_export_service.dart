@@ -6,59 +6,56 @@ import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ReportExportService {
-  /// Generate PDF report
-  Future<void> generatePDF({
-    required List<dynamic> logsData,
-    required DateTime startDate,
-    required DateTime endDate,
+  // ─────────────────── PDF EXPORT ───────────────────
+  Future<void> exportPDF({
+    required List<Map<String, dynamic>> activities,
+    required String reportPeriod,
+    required int totalAdditions,
+    required int totalRemovals,
   }) async {
     final pdf = pw.Document();
 
     pdf.addPage(
-      pw.Page(
-        build: (pw.Context context) {
-          return pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                'Stock Activity Report',
-                style: pw.TextStyle(
-                  fontSize: 22,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              pw.SizedBox(height: 10),
-              pw.Text(
-                'Period: ${_formatDate(startDate)} → ${_formatDate(endDate)}',
-              ),
-              pw.Text(
-                'Generated on: ${_formatDate(DateTime.now())}',
-              ),
-              pw.Text('Total Records: ${logsData.length}'),
-              pw.SizedBox(height: 20),
-              pw.Table.fromTextArray(
-                headers: const [
-                  'Date',
-                  'Part',
-                  'Type',
-                  'Quantity',
-                  'User',
-                  'Location',
-                ],
-                data: logsData.map((log) {
-                  return [
-                    _safeDate(log['created_at']),
-                    log['composant']?['designation'] ?? '-',
-                    log['type'] ?? '-',
-                    log['quantite'].toString(),
-                    log['utilisateur']?['nom'] ?? '-',
-                    log['sac']?['nom'] ?? '-',
-                  ];
-                }).toList(),
-              ),
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (context) => [
+          pw.Text(
+            'Stock Activity Report',
+            style: pw.TextStyle(
+              fontSize: 22,
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
+          pw.SizedBox(height: 8),
+          pw.Text('Period: $reportPeriod'),
+          pw.Text('Generated on: ${_today()}'),
+          pw.SizedBox(height: 8),
+          pw.Text('Total Additions: $totalAdditions'),
+          pw.Text('Total Removals: $totalRemovals'),
+          pw.Text('Total Records: ${activities.length}'),
+          pw.SizedBox(height: 16),
+
+          pw.Table.fromTextArray(
+            headers: const [
+              'Date',
+              'Part',
+              'Type',
+              'Qty',
+              'By',
+              'Location',
             ],
-          );
-        },
+            data: activities.map((a) {
+              return [
+                a['date'] ?? '-',
+                a['part'] ?? '-',
+                a['type'] ?? '-',
+                a['qty'].toString(),
+                a['by'] ?? '-',
+                a['location'] ?? '-',
+              ];
+            }).toList(),
+          ),
+        ],
       ),
     );
 
@@ -67,23 +64,25 @@ class ReportExportService {
     );
   }
 
-  /// Generate CSV report
-  Future<File> generateCSV({
-    required List<dynamic> logsData,
-  }) async {
-    final csvData = <List<String>>[
-      ['Date', 'Part', 'Type', 'Quantity', 'User', 'Location'],
-      ...logsData.map((log) => [
-            _safeDate(log['created_at']),
-            log['composant']?['designation'] ?? '-',
-            log['type'] ?? '-',
-            log['quantite'].toString(),
-            log['utilisateur']?['nom'] ?? '-',
-            log['sac']?['nom'] ?? '-',
-          ]),
+  // ─────────────────── CSV EXPORT ───────────────────
+  Future<File> exportCSV(
+    List<Map<String, dynamic>> activities,
+  ) async {
+    final rows = <List<String>>[
+      ['Date', 'Part', 'Type', 'Qty', 'By', 'Location'],
+      ...activities.map(
+        (a) => [
+          a['date'] ?? '-',
+          a['part'] ?? '-',
+          a['type'] ?? '-',
+          a['qty'].toString(),
+          a['by'] ?? '-',
+          a['location'] ?? '-',
+        ],
+      ),
     ];
 
-    final csv = const ListToCsvConverter().convert(csvData);
+    final csv = const ListToCsvConverter().convert(rows);
     final directory = await getApplicationDocumentsDirectory();
 
     final file = File(
@@ -94,14 +93,11 @@ class ReportExportService {
     return file;
   }
 
-  // ---------- Helpers ----------
-
-  String _formatDate(DateTime date) {
-    return date.toIso8601String().split('T').first;
+  // ─────────────────── Helpers ───────────────────
+  String _today() {
+    final now = DateTime.now();
+    return '${now.year}-${_two(now.month)}-${_two(now.day)}';
   }
 
-  String _safeDate(dynamic raw) {
-    if (raw == null) return '-';
-    return raw.toString().split('T').first;
-  }
+  String _two(int n) => n.toString().padLeft(2, '0');
 }

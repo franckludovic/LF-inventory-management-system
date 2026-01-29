@@ -4,161 +4,174 @@ import '../../../core/models/report_model.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/utils/error_handler.dart';
 import '../services/reports_service.dart';
-import '../services/report_export_service.dart';
 import '../../../core/controllers/user_controller.dart';
+import '../../../features/Parts/services/parts_service.dart';
 
 class GenerateReportController extends GetxController {
-  var reports = <ReportModel>[].obs;
-  var filteredReports = <ReportModel>[].obs;
-  var searchQuery = ''.obs;
-  var selectedFilter = 'All Reports'.obs;
-  var selectedReportType = 'Weekly Stock Activity Report'.obs;
-  var selectedPartName = 'All Parts'.obs;
-  var selectedTechnicianId = ''.obs;
-  var technicians = <UserModel>[].obs;
-  var isLoading = false.obs;
-  final TextEditingController searchController = TextEditingController();
+  // ─────────────────── State ───────────────────
+  final reports = <ReportModel>[].obs;
+
+  final selectedReportType = 'Weekly Stock Activity Report'.obs;
+  final selectedPartName = 'All Parts'.obs;
+  final selectedTechnicianId = ''.obs;
+
+  final technicians = <UserModel>[].obs;
+  final partNames = <String>['All Parts'].obs;
+
+  final isLoading = false.obs;
+
+  // ─────────────────── Controllers ───────────────────
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
-  final TextEditingController technicianNameController = TextEditingController();
 
-  final filters = ['All Reports', 'Additions', 'Subtractions'];
-  final reportTypes = ['Weekly Stock Activity Report', 'Monthly Summary', 'Part-Specific Report', 'Technician Report'];
-  final partNames = ['All Parts', 'Sensor A', 'Cable B', 'Board C'];
+  // ─────────────────── Services ───────────────────
   final ReportsService _reportsService = ReportsService();
-  final ReportExportService _exportService = ReportExportService();
+  final PartsService _partsService = PartsService();
   final UserController _userController = Get.find<UserController>();
 
+  // ─────────────────── Constants ───────────────────
+  final reportTypes = const [
+    'Weekly Stock Activity Report',
+    'Monthly Summary',
+    'Part-Specific Report',
+    'Technician Report',
+  ];
+
+  // ─────────────────── Lifecycle ───────────────────
   @override
   void onInit() {
     super.onInit();
-    loadReports();
+    _setDefaultDates();
     loadTechnicians();
-    _setupSearchAndFilter();
+    loadParts();
   }
 
-  Future<void> loadReports() async {
+  @override
+  void onClose() {
+    startDateController.dispose();
+    endDateController.dispose();
+    super.onClose();
+  }
+
+  // ─────────────────── Helpers ───────────────────
+  void _setDefaultDates() {
+    final now = DateTime.now();
+    final monday = now.subtract(Duration(days: now.weekday - 1));
+    final sunday = monday.add(const Duration(days: 6));
+
+    startDateController.text = _formatDate(monday);
+    endDateController.text = _formatDate(sunday);
+  }
+
+  String _formatDate(DateTime date) {
+    return date.toIso8601String().split('T').first;
+  }
+
+  // ─────────────────── Loaders ───────────────────
+  Future<void> loadTechnicians() async {
+    if (!_userController.isAdmin) return;
+
     try {
-      isLoading.value = true;
-      final isAdmin = _userController.userRole.contains('ROLE_ADMIN');
-
-      List<dynamic> logsData;
-      if (isAdmin) {
-        logsData = await _reportsService.getAllLogsAdmin();
-      } else {
-        logsData = await _reportsService.getAllLogsTechnician();
-      }
-
-      final reportsList = logsData.map((log) => ReportModel.fromMap(log)).toList();
-      reports.assignAll(reportsList);
+      final list = await _reportsService.getTechnicians();
+      technicians.assignAll(list);
     } catch (e) {
       Get.snackbar('Error', ErrorHandler.getErrorMessage(e));
-    } finally {
-      isLoading.value = false;
     }
   }
 
-  void _setupSearchAndFilter() {
-    everAll([searchQuery, selectedFilter], (_) {
-      _filterReports();
-    });
+  Future<void> loadParts() async {
+    try {
+      final parts = await _partsService.getAllParts(
+        _userController.accessToken.value,
+      );
+      final names = ['All Parts', ...parts.map((p) => p['designation'] as String)];
+      partNames.assignAll(names);
+    } catch (_) {
+      partNames.assignAll(['All Parts', 'Sensor A', 'Cable B', 'Board C']);
+    }
   }
 
-  void _filterReports() {
-    var filtered = reports.where((report) {
-      final matchesSearch = searchQuery.isEmpty ||
-          report.partName.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          report.userName.toLowerCase().contains(searchQuery.toLowerCase());
-
-      final matchesFilter = selectedFilter.value == 'All Reports' ||
-          report.type.toLowerCase().contains(selectedFilter.value.toLowerCase());
-
-      return matchesSearch && matchesFilter;
-    }).toList();
-
-    filteredReports.assignAll(filtered);
+  Future<void> loadReports() async {
+    await loadTechnicians();
+    await loadParts();
   }
 
-  void onSearchChanged(String query) {
-    searchQuery.value = query;
-  }
-
-  void onFilterSelected(String filter) {
-    selectedFilter.value = filter;
-  }
-
-  void onReportPressed(ReportModel report) {
-    // Navigate to report details
-    Get.toNamed('/report-details', arguments: report);
-  }
-
+  // ─────────────────── Setters ───────────────────
   void updateSelectedReportType(String? value) {
-    selectedReportType.value = value ?? 'Weekly Stock Activity Report';
+    selectedReportType.value = value ?? reportTypes.first;
   }
 
   void updateSelectedPartName(String? value) {
-    selectedPartName.value = value ?? '';
+    selectedPartName.value = value ?? 'All Parts';
   }
 
   void updateSelectedTechnicianId(String? value) {
     selectedTechnicianId.value = value ?? '';
   }
 
-  Future<void> loadTechnicians() async {
-    if (_userController.isAdmin) {
-      try {
-        final techniciansList = await _reportsService.getTechnicians();
-        technicians.assignAll(techniciansList);
-      } catch (e) {
-        Get.snackbar('Error', ErrorHandler.getErrorMessage(e));
-      }
-    }
-  }
-
+  // ─────────────────── Core Logic ───────────────────
   Future<void> generateReport() async {
     try {
       isLoading.value = true;
 
-      // Validate inputs
-      if (startDateController.text.isEmpty || endDateController.text.isEmpty) {
-        Get.snackbar('Error', 'Please select both start and end dates');
+      // ── Validate dates
+      final startDate = DateTime.tryParse(startDateController.text);
+      final endDate = DateTime.tryParse(endDateController.text);
+
+      if (startDate == null || endDate == null) {
+        Get.snackbar('Error', 'Invalid date format');
         return;
       }
-
-      final startDate = DateTime.parse(startDateController.text);
-      final endDate = DateTime.parse(endDateController.text);
 
       if (startDate.isAfter(endDate)) {
         Get.snackbar('Error', 'Start date cannot be after end date');
         return;
       }
 
-      // Role-based access control
       final isAdmin = _userController.isAdmin;
+
       if (!isAdmin && selectedTechnicianId.value.isNotEmpty) {
-        Get.snackbar('Error', 'Technicians can only generate their own reports');
+        Get.snackbar(
+          'Error',
+          'Technicians can only generate their own reports',
+        );
         return;
       }
 
-      // Fetch filtered logs
+      // ── Fetch logs
       List<dynamic> logsData;
+
       if (isAdmin) {
+        logsData = await _reportsService.getLogsByDateAdmin(
+          startDate,
+          endDate,
+        );
+
         if (selectedTechnicianId.value.isNotEmpty) {
-          // Admin selecting specific technician - use all logs and filter client-side
-          logsData = await _reportsService.getLogsByDateAdmin(startDate, endDate);
-          logsData = logsData.where((log) => log['utilisateur']['id'] == selectedTechnicianId.value).toList();
-        } else {
-          // Admin generating all technicians' reports
-          logsData = await _reportsService.getLogsByDateAdmin(startDate, endDate);
+          logsData = logsData
+              .where(
+                (log) =>
+                    log['utilisateur']?['id'] ==
+                    selectedTechnicianId.value,
+              )
+              .toList();
         }
       } else {
-        // Technician generating own reports
-        logsData = await _reportsService.getLogsByDateTechnician(startDate, endDate);
+        logsData = await _reportsService.getLogsByDateTechnician(
+          startDate,
+          endDate,
+        );
       }
 
-      // Apply part filter if selected
+      // ── Apply part filter
       if (selectedPartName.value != 'All Parts') {
-        logsData = logsData.where((log) => log['composant']['designation'] == selectedPartName.value).toList();
+        logsData = logsData
+            .where(
+              (log) =>
+                  log['composant']?['designation'] ==
+                  selectedPartName.value,
+            )
+            .toList();
       }
 
       if (logsData.isEmpty) {
@@ -166,23 +179,20 @@ class GenerateReportController extends GetxController {
         return;
       }
 
-      // Navigate to report details screen with the data for preview and export
-      Get.toNamed('/report-details', arguments: {
-        'logsData': logsData,
-        'startDate': startDate,
-        'endDate': endDate,
-        'reportType': selectedReportType.value,
-      });
+      // ── Navigate to preview/details
+      Get.toNamed(
+        '/report-details',
+        arguments: {
+          'logsData': logsData,
+          'startDate': startDate,
+          'endDate': endDate,
+          'reportType': selectedReportType.value,
+        },
+      );
     } catch (e) {
       Get.snackbar('Error', ErrorHandler.getErrorMessage(e));
     } finally {
       isLoading.value = false;
     }
-  }
-
-
-
-  void onGenerateReportPressed() {
-    generateReport();
   }
 }
