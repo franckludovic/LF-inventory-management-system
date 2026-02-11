@@ -13,6 +13,10 @@ class PartModel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
+  // Helper getters for stock status
+  bool get isCriticalStock => (int.tryParse(quantity) ?? 0) <= 2; // Critical: 2 or less
+  bool get isLowStockStatus => (int.tryParse(quantity) ?? 0) <= 5; // Low: 5 or less
+
   const PartModel({
     required this.id,
     required this.designation,
@@ -58,7 +62,7 @@ class PartModel {
       quantity: totalQuantity.toString(),
       location: locationString.isNotEmpty ? locationString : 'No location',
       imageUrl: map['imageUrl'] ?? '',
-      isLowStock: totalQuantity < 5, // Consider low stock if less than 5
+      isLowStock: totalQuantity <= 5, // Low stock: 5 or less
       reference: map['reference'],
       description: map['description'],
       locations: locationList.isNotEmpty ? locationList : null,
