@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/models/report_model.dart';
 import '../../../core/models/user_model.dart';
 import '../../../core/utils/error_handler.dart';
+import '../../../core/constants/strings.dart';
 import '../services/reports_service.dart';
 import '../../../core/controllers/user_controller.dart';
 import '../../../features/Parts/services/parts_service.dart';
@@ -11,11 +12,11 @@ class GenerateReportController extends GetxController {
   // ─────────────────── State ───────────────────
   final reports = <ReportModel>[].obs;
 
-  final selectedReportType = 'Weekly Stock Activity Report'.obs;
+  final selectedReportType = 'Monthly'.obs;
   final selectedPartName = 'All Parts'.obs;
-  final selectedTechnicianId = ''.obs;
+  final selectedUserId = ''.obs;
 
-  final technicians = <UserModel>[].obs;
+  final users = <UserModel>[].obs;
   final partNames = <String>['All Parts'].obs;
 
   final isLoading = false.obs;
@@ -31,10 +32,9 @@ class GenerateReportController extends GetxController {
 
   // ─────────────────── Constants ───────────────────
   final reportTypes = const [
-    'Weekly Stock Activity Report',
-    'Monthly Summary',
-    'Part-Specific Report',
-    'Technician Report',
+    'Monthly',
+    'Weekly',
+    'Custom',
   ];
 
   // ─────────────────── Lifecycle ───────────────────
@@ -42,7 +42,7 @@ class GenerateReportController extends GetxController {
   void onInit() {
     super.onInit();
     _setDefaultDates();
-    loadTechnicians();
+    loadUsers();
     loadParts();
   }
 
@@ -67,13 +67,37 @@ class GenerateReportController extends GetxController {
     return date.toIso8601String().split('T').first;
   }
 
+  void _setMonthlyDates() {
+    final now = DateTime.now();
+    final oneMonthAgo = DateTime(now.year, now.month - 1, now.day);
+
+    startDateController.text = _formatDate(oneMonthAgo);
+    endDateController.text = _formatDate(now);
+  }
+
+  void _setWeeklyDates() {
+    final now = DateTime.now();
+    final oneWeekAgo = now.subtract(const Duration(days: 7));
+
+    startDateController.text = _formatDate(oneWeekAgo);
+    endDateController.text = _formatDate(now);
+  }
+
+  void _setMonthlyAutoDates() {
+    final now = DateTime.now();
+    final oneMonthAgo = DateTime(now.year, now.month - 1, now.day);
+
+    startDateController.text = _formatDate(oneMonthAgo);
+    endDateController.text = _formatDate(now);
+  }
+
   // ─────────────────── Loaders ───────────────────
-  Future<void> loadTechnicians() async {
+  Future<void> loadUsers() async {
     if (!_userController.isAdmin) return;
 
     try {
-      final list = await _reportsService.getTechnicians();
-      technicians.assignAll(list);
+      final list = await _reportsService.getAllUsers();
+      users.assignAll(list);
     } catch (e) {
       Get.snackbar('Error', ErrorHandler.getErrorMessage(e));
     }
@@ -92,21 +116,29 @@ class GenerateReportController extends GetxController {
   }
 
   Future<void> loadReports() async {
-    await loadTechnicians();
+    await loadUsers();
     await loadParts();
   }
 
   // ─────────────────── Setters ───────────────────
   void updateSelectedReportType(String? value) {
     selectedReportType.value = value ?? reportTypes.first;
+
+    // Handle automatic date setting for Monthly and Weekly
+    if (value == 'Monthly') {
+      _setMonthlyDates();
+    } else if (value == 'Weekly') {
+      _setWeeklyDates();
+    }
+    // For Custom, dates remain editable by user
   }
 
   void updateSelectedPartName(String? value) {
     selectedPartName.value = value ?? 'All Parts';
   }
 
-  void updateSelectedTechnicianId(String? value) {
-    selectedTechnicianId.value = value ?? '';
+  void updateSelectedUserId(String? value) {
+    selectedUserId.value = value ?? '';
   }
 
   // ─────────────────── Core Logic ───────────────────
@@ -119,7 +151,7 @@ class GenerateReportController extends GetxController {
       final endDate = DateTime.tryParse(endDateController.text);
 
       if (startDate == null || endDate == null) {
-        Get.snackbar('Error', 'Invalid date format');
+        Get.snackbar(AppStrings.error, AppStrings.invalidDateFormat);
         return;
       }
 
@@ -130,10 +162,10 @@ class GenerateReportController extends GetxController {
 
       final isAdmin = _userController.isAdmin;
 
-      if (!isAdmin && selectedTechnicianId.value.isNotEmpty) {
+      if (!isAdmin && selectedUserId.value.isNotEmpty) {
         Get.snackbar(
-          'Error',
-          'Technicians can only generate their own reports',
+          AppStrings.error,
+          AppStrings.technicianOwnReportsOnly,
         );
         return;
       }
@@ -147,14 +179,16 @@ class GenerateReportController extends GetxController {
           endDate,
         );
 
-        if (selectedTechnicianId.value.isNotEmpty) {
-          logsData = logsData
-              .where(
-                (log) =>
-                    log['utilisateur']?['id'] ==
-                    selectedTechnicianId.value,
-              )
-              .toList();
+        if (selectedUserId.value.isNotEmpty) {
+          final selectedUser = users.firstWhereOrNull((u) => u.id == selectedUserId.value);
+          if (selectedUser != null) {
+            logsData = logsData
+                .where(
+                  (log) =>
+                      log['utilisateur']?['nom'] == selectedUser.nom,
+                )
+                .toList();
+          }
         }
       } else {
         logsData = await _reportsService.getLogsByDateTechnician(
@@ -175,7 +209,7 @@ class GenerateReportController extends GetxController {
       }
 
       if (logsData.isEmpty) {
-        Get.snackbar('No Data', 'No logs found for the selected criteria');
+        Get.snackbar(AppStrings.noData, AppStrings.noLogsFound);
         return;
       }
 

@@ -28,7 +28,7 @@ class LocationManagementController extends GetxController {
       locations.assignAll(locationsList);
       filteredLocations.assignAll(locations);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load locations: $e');
+      Get.snackbar('Erreur', 'Echec du chargement des Localisation: $e');
     } finally {
       isLoading.value = false;
     }
@@ -61,15 +61,15 @@ class LocationManagementController extends GetxController {
 
   void onDeletePressed(LocationModel location) {
     Get.defaultDialog(
-      title: 'Delete Location',
-      middleText: 'Are you sure you want to delete ${location.name}?',
-      textConfirm: 'Delete',
-      textCancel: 'Cancel',
+      title: 'Effacer la localisation',
+      middleText: 'Etes vous sur de vouloir effacer la localiation ${location.name}?',
+      textConfirm: 'Effacer',
+      textCancel: 'Annuler',
       confirmTextColor: Colors.white,
       onConfirm: () {
         locations.remove(location);
         Get.back();
-        Get.snackbar('Success', 'Location deleted successfully');
+        Get.snackbar('Succès', 'Localisation effacée avec succès');
       },
     );
   }

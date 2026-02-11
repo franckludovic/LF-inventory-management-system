@@ -51,9 +51,9 @@ class AddLocationController extends GetxController {
   void _validateForm() {
     // Validate name
     if (nameController.text.trim().isEmpty) {
-      nameError.value = 'Location name is required';
+      nameError.value = 'Non de la localisation est requis';
     } else if (nameController.text.trim().length < 2) {
-      nameError.value = 'Location name must be at least 2 characters';
+      nameError.value = 'Le nom doit contenir au moins 2 caractères';
     } else {
       nameError.value = '';
     }
@@ -62,7 +62,7 @@ class AddLocationController extends GetxController {
     if (maxQuantityController.text.isNotEmpty) {
       final qty = int.tryParse(maxQuantityController.text);
       if (qty == null || qty <= 0) {
-        maxQuantityError.value = 'Max quantity must be a positive number';
+        maxQuantityError.value = 'La quantité maximale doit être un entier positif';
       } else {
         maxQuantityError.value = '';
       }
@@ -77,8 +77,8 @@ class AddLocationController extends GetxController {
   Future<void> onSaveLocation() async {
     if (!isFormValid.value) {
       SnackbarUtils.showError(
-        'Validation Error',
-        'Please fill in all required fields correctly',
+        'Erreur de validation',
+        'Veuillez remplir tous les champs requis correctement',
       );
       return;
     }
@@ -107,8 +107,8 @@ class AddLocationController extends GetxController {
       final location = LocationModel.fromMap(result);
 
       SnackbarUtils.showSuccess(
-        'Success',
-        editingLocation != null ? 'Location updated successfully!' : 'Location added successfully!',
+        'Succès',
+        editingLocation != null ? 'Localisation mise à jour avec succès!' : 'Localisation ajoutée avec succès!',
       );
 
       // Navigate back with result after a short delay to allow snackbar to show

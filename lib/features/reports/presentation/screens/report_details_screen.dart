@@ -105,7 +105,7 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                           ),
                           const SizedBox(height: 16),
                           Obx(() => ReportSummaryCard(
-                            label: 'Total Records',
+                            label: AppStrings.totalRecords,
                             value: '${controller.totalRecords.value}',
                             icon: Icons.list_alt,
                             iconColor: AppColors.primary,
@@ -237,7 +237,7 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                                 partName: activity['part'],
                                 location: activity['location'],
                                 type: activity['type'],
-                                quantity: activity['qty'],
+                                quantity: activity['qty'].toString(),
                                 by: activity['by'],
                               );
                             }).toList(),
@@ -245,21 +245,6 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                         ],
                       ),
                     ),
-
-                    // Pagination Info
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Center(
-                        child: Text(
-                          AppStrings.showingTransactions,
-                          style: TextStyle(
-                            color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                    ),
-
                     // Space for bottom buttons
                     const SizedBox(height: 100),
                   ],
@@ -319,12 +304,6 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  CustomElevatedButton(
-                    buttonName: AppStrings.backToDashboard,
-                    buttonIcon: Icons.arrow_back,
-                    onPressed: controller.backToDashboard,
                   ),
                 ],
               ),

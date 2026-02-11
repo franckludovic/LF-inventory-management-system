@@ -72,7 +72,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                             onChanged:
                                 controller.updateSelectedReportType,
                             hint: Text(
-                              AppStrings.weeklyStockActivityReport,
+                              AppStrings.selectReportType,
                               style: TextStyle(
                                 color: isDark
                                     ? AppColors.textSecondaryDark
@@ -83,37 +83,105 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
 
                       const SizedBox(height: 24),
 
-                      /// DATE RANGE
-                      Text(
-                        AppStrings.dateRange,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? AppColors.textPrimaryDark
-                              : AppColors.textPrimaryLight,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: CustomDatePickerField(
-                              label: AppStrings.startDate,
-                              controller:
-                                  controller.startDateController,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: CustomDatePickerField(
-                              label: AppStrings.endDate,
-                              controller:
-                                  controller.endDateController,
-                            ),
-                          ),
-                        ],
-                      ),
+                      /// DATE RANGE (Only show for Custom report type)
+                      Obx(() {
+                        if (controller.selectedReportType.value == 'Custom') {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppStrings.dateRange,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? AppColors.textPrimaryDark
+                                      : AppColors.textPrimaryLight,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomDatePickerField(
+                                      label: AppStrings.startDate,
+                                      controller:
+                                          controller.startDateController,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: CustomDatePickerField(
+                                      label: AppStrings.endDate,
+                                      controller:
+                                          controller.endDateController,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          );
+                        } else {
+                          // For Monthly and Weekly, show the date range as read-only info
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${AppStrings.dateRangeLabel} (${controller.selectedReportType.value})',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark
+                                      ? AppColors.textPrimaryDark
+                                      : AppColors.textPrimaryLight,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? AppColors.cardBackgroundDark
+                                      : AppColors.cardBackgroundLight,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? AppColors.borderDark
+                                        : AppColors.borderLight,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        'From: ${controller.startDateController.text}',
+                                        style: TextStyle(
+                                          color: isDark
+                                              ? AppColors.textPrimaryDark
+                                              : AppColors.textPrimaryLight,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      child: Text(
+                                        'To: ${controller.endDateController.text}',
+                                        style: TextStyle(
+                                          color: isDark
+                                              ? AppColors.textPrimaryDark
+                                              : AppColors.textPrimaryLight,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          );
+                        }
+                      }),
 
                       const SizedBox(height: 24),
 
@@ -142,48 +210,43 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
 
                       const SizedBox(height: 16),
 
-                      /// TECHNICIAN FILTER (ADMIN ONLY)
+                      /// USER FILTER (ADMIN ONLY)
                       Obx(() {
                         if (!userController.isAdmin) {
                           return const SizedBox();
                         }
 
-                        final selectedTechnician = controller
-                            .technicians
-                            .firstWhereOrNull(
-                              (t) =>
-                                  t.id ==
-                                  controller
-                                      .selectedTechnicianId.value,
-                            );
+                        final userOptions = [AppStrings.allUsers, ...controller.users.map((u) => u.nom)];
 
-                        return TextFormField(
-                          readOnly: true,
-                          initialValue:
-                              selectedTechnician?.nom ??
-                                  'Select Technician',
-                          decoration: _inputDecoration(isDark)
-                              .copyWith(
-                            suffixIcon: Icon(
-                              Icons.arrow_drop_down,
+                        return DropdownButtonFormField<String>(
+                          value: controller.selectedUserId.value.isEmpty
+                              ? AppStrings.allUsers
+                              : controller.users.firstWhereOrNull((u) => u.id == controller.selectedUserId.value)?.nom ?? AppStrings.allUsers,
+                          isExpanded: true,
+                          decoration: _inputDecoration(isDark),
+                          dropdownColor: isDark
+                              ? AppColors.cardBackgroundDark
+                              : AppColors.cardBackgroundLight,
+                          items: userOptions.map((userName) => DropdownMenuItem(
+                            value: userName,
+                            child: Text(userName),
+                          )).toList(),
+                          onChanged: (value) {
+                            if (value == AppStrings.allUsers) {
+                              controller.updateSelectedUserId('');
+                            } else {
+                              final selectedUser = controller.users.firstWhereOrNull((u) => u.nom == value);
+                              controller.updateSelectedUserId(selectedUser?.id ?? '');
+                            }
+                          },
+                          hint: Text(
+                            AppStrings.selectUser,
+                            style: TextStyle(
                               color: isDark
                                   ? AppColors.textSecondaryDark
                                   : AppColors.textSecondaryLight,
                             ),
                           ),
-                          onTap: () async {
-                            if (controller.technicians.isEmpty) {
-                              await controller.loadTechnicians();
-                            }
-
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (_) => _TechnicianPicker(
-                                isDark: isDark,
-                                controller: controller,
-                              ),
-                            );
-                          },
                         );
                       }),
 
@@ -236,54 +299,4 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
   }
 }
 
-class _TechnicianPicker extends StatelessWidget {
-  final bool isDark;
-  final GenerateReportController controller;
 
-  const _TechnicianPicker({
-    required this.isDark,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 320,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Text(
-            AppStrings.selectTechnician,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: isDark
-                  ? AppColors.textPrimaryDark
-                  : AppColors.textPrimaryLight,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: controller.technicians.isEmpty
-                ? const Center(child: Text('No technicians'))
-                : ListView.builder(
-                    itemCount: controller.technicians.length,
-                    itemBuilder: (_, index) {
-                      final tech =
-                          controller.technicians[index];
-                      return ListTile(
-                        title: Text(tech.nom),
-                        onTap: () {
-                          controller.updateSelectedTechnicianId(
-                              tech.id);
-                          Get.back();
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}

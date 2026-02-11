@@ -4,9 +4,9 @@ import '../controllers/user_controller.dart';
 
 
 class ApiService {
-  // static const String baseUrl = 'https://lf-inv.onrender.com';
+  static const String baseUrl = 'https://lf-inv.onrender.com';
   // static const String baseUrl = 'http://10.172.104.21:3000';
-   static const String baseUrl = 'http://localhost:3000';
+  //  static const String baseUrl = 'http://localhost:3000';
 
   static ApiService? _instance;
   late final Dio _dio;
@@ -90,7 +90,7 @@ class ApiService {
       final response = await _dio.get(endpoint, queryParameters: queryParameters, options: options);
       return response;
     } catch (e) {
-      throw Exception('GET request failed: $e');
+      throw Exception('GET request failed: $e ');
     }
   }
 

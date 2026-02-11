@@ -67,48 +67,48 @@ class AddUserController extends GetxController {
   void _validateForm() {
     // Validate full name
     if (fullNameController.text.trim().isEmpty) {
-      fullNameError.value = 'Full name is required';
+      fullNameError.value = 'Le nom complet est requis';
     } else if (fullNameController.text.trim().length < 2) {
-      fullNameError.value = 'Full name must be at least 2 characters';
+      fullNameError.value = 'Le nom complet doit contenir au moins 2 caractères';
     } else {
       fullNameError.value = '';
     }
 
     // Validate email
     if (emailController.text.trim().isEmpty) {
-      emailError.value = 'Email is required';
+      emailError.value = 'L\'email est requis';
     } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(emailController.text.trim())) {
-      emailError.value = 'Enter a valid email address';
+      emailError.value = 'Entrez une adresse email valide';
     } else {
       emailError.value = '';
     }
 
     // Validate department
     if (departmentController.text.trim().isEmpty) {
-      departmentError.value = 'Department is required';
+      departmentError.value = 'Le département est requis';
     } else {
       departmentError.value = '';
     }
 
     // Validate region
     if (regionController.text.trim().isEmpty) {
-      regionError.value = 'Region is required';
+      regionError.value = 'La région est requise';
     } else {
       regionError.value = '';
     }
 
     // Validate ville
     if (villeController.text.trim().isEmpty) {
-      villeError.value = 'Ville is required';
+      villeError.value = 'La ville est requise';
     } else {
       villeError.value = '';
     }
 
     // Validate password
     if (!isEditing.value && passwordController.text.isEmpty) {
-      passwordError.value = 'Password is required';
+      passwordError.value = 'Le mot de passe est requis';
     } else if (passwordController.text.isNotEmpty && passwordController.text.length < 6) {
-      passwordError.value = 'Password must be at least 6 characters';
+      passwordError.value = 'Le mot de passe doit contenir au moins 6 caractères';
     } else {
       passwordError.value = '';
     }
@@ -135,8 +135,8 @@ class AddUserController extends GetxController {
   Future<void> onSaveTechnician() async {
     if (!isFormValid.value) {
       Get.snackbar(
-        'Validation Error',
-        'Please fill in all required fields correctly',
+        'Erreur de validation',
+        'Veuillez remplir tous les champs requis correctement',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -160,8 +160,8 @@ class AddUserController extends GetxController {
       );
 
       Get.snackbar(
-        'Success',
-        'User added successfully!',
+        'Succès',
+        'Utilisateur ajouté avec succès!',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
         colorText: Colors.white,
@@ -206,8 +206,8 @@ class AddUserController extends GetxController {
   Future<void> onSaveUser() async {
     if (!isFormValid.value) {
       Get.snackbar(
-        'Validation Error',
-        'Please fill in all required fields correctly',
+        'Erreur de validation',
+        'Veuillez remplir tous les champs requis correctement',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,
@@ -232,8 +232,8 @@ class AddUserController extends GetxController {
         // The isUserBlocked toggle is for UI only
 
         Get.snackbar(
-          'Success',
-          'User updated successfully!',
+          'Succès',
+          'Utilisateur mis à jour avec succès!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
@@ -266,8 +266,8 @@ class AddUserController extends GetxController {
         );
 
         Get.snackbar(
-          'Success',
-          'User added successfully!',
+          'Succès',
+          'Utilisateur ajouté avec succès!',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lf_project/core/widgets/custom_app_bar.dart';
-import 'package:lf_project/core/widgets/action_button.dart';
 import 'package:lf_project/core/widgets/stock_alert_card.dart';
 import 'package:lf_project/core/constants/colors.dart';
 import '../../controllers/dashboard_controller.dart';
+import '../../../../core/constants/strings.dart';
 
 class DashboardScreen extends GetView<DashboardController> {
   const DashboardScreen({super.key});
@@ -13,7 +13,7 @@ class DashboardScreen extends GetView<DashboardController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Spare Parts Inventory',
+        title: AppStrings.appTitle2,
         onProfileTap: controller.onProfileTap,
         showBackButton: false,
       ),
@@ -27,22 +27,6 @@ class DashboardScreen extends GetView<DashboardController> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
-                    ActionButton(
-                      icon: Icons.sync_alt,
-                      title: 'Add / Remove Stock',
-                      subtitle: 'Update current levels',
-                      onPressed: () => controller.onActionButtonPressed('stock'),
-                    ),
-                    const SizedBox(height: 16),
-                    ActionButton(
-                      icon: Icons.photo_camera,
-                      title: 'Capture Image',
-                      subtitle: 'Scan barcode or visual ID',
-                      onPressed: () => controller.onActionButtonPressed('capture'),
-                    ),
-                    const SizedBox(height: 32),
-
                     // Low Stock Alert Section
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -90,7 +74,7 @@ class DashboardScreen extends GetView<DashboardController> {
                       }
 
                       if (controller.lowStockParts.isEmpty) {
-                        return const Text('No low stock alerts');
+                        return const Text('Pas D\'alertes de stock faible pour le moment.');
                       }
 
                       return Column(
@@ -103,8 +87,8 @@ class DashboardScreen extends GetView<DashboardController> {
                               StockAlertCard(
                                 title: part.designation,
                                 imageUrl: part.imageUrl,
-                                subtitle: 'Only $qty units remaining',
-                                status: isCritical ? 'CRITICAL STOCK' : 'LOW STOCK',
+                                subtitle: 'Rien que $qty unites restantes en stock',
+                                status: isCritical ? 'STOCK CRITIC' : 'FAIBLE STOCK',
                                 statusColor: isCritical ? AppColors.error : AppColors.warning,
                                 statusIcon: isCritical ? Icons.warning : Icons.inventory_2,
                                 onRestockPressed: () => (),

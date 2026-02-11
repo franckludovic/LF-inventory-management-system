@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import '../../Parts/services/parts_service.dart';
 import '../../../core/models/part_model.dart';
 import '../../../core/controllers/user_controller.dart';
+import '../../../core/constants/strings.dart';
 
 class DashboardController extends GetxController {
   var lowStockParts = <PartModel>[].obs;
@@ -24,7 +25,7 @@ class DashboardController extends GetxController {
       // Filter parts with low stock (quantity <= 5)
       lowStockParts.assignAll(partsList.where((part) => int.parse(part.quantity) <= 5).toList());
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load low stock alerts: $e');
+      Get.snackbar(AppStrings.error, AppStrings.failedToLoadLowStockAlerts);
     } finally {
       isLoading.value = false;
     }

@@ -76,7 +76,7 @@ class SearchScreen extends GetView<CustomSearchController> {
                         );
                       }).toList(),
                       decoration: InputDecoration(
-                        labelText: 'Status',
+                        labelText: AppStrings.status,
                         border: OutlineInputBorder(),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                         isDense: true,
@@ -128,7 +128,7 @@ class SearchScreen extends GetView<CustomSearchController> {
                         );
                       }).toList(),
                       decoration: InputDecoration(
-                        labelText: 'Location',
+                        labelText: AppStrings.location,
                         border: OutlineInputBorder(),
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                         isDense: true,

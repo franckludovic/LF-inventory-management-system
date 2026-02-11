@@ -60,20 +60,25 @@ class ReportsService {
   }
 
   /// Get logs by date range for technician (own logs only)
-  /// Backend: GET /api/logs/by-date-technician, expects {startDate, endDate} in body (technician only)
+  /// Backend: GET /api/logs/all-logs-technician, then filter by date on frontend
   Future<List<dynamic>> getLogsByDateTechnician(DateTime startDate, DateTime endDate) async {
     try {
-      final data = {
-        'startDate': startDate.toIso8601String(),
-        'endDate': endDate.toIso8601String(),
-      };
-
-      final response = await _apiService.get('/api/logs/by-date-technician', queryParameters: data);
+      // Get all technician logs
+      final response = await _apiService.get('/api/logs/all-logs-technician');
 
       if (response.statusCode == 200) {
-        return response.data as List<dynamic>;
+        final allLogs = response.data as List<dynamic>;
+
+        // Filter by date range on frontend
+        final filteredLogs = allLogs.where((log) {
+          final logDate = DateTime.parse(log['created_at']);
+          return logDate.isAfter(startDate.subtract(const Duration(days: 1))) &&
+                 logDate.isBefore(endDate.add(const Duration(days: 1)));
+        }).toList();
+
+        return filteredLogs;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to get logs by date');
+        throw Exception(response.data['Error'] ?? 'Failed to get logs');
       }
     } catch (e) {
       throw Exception('Failed to get logs by date: ${e.toString()}');
@@ -91,6 +96,16 @@ class ReportsService {
       return technicians;
     } catch (e) {
       throw Exception('Failed to get technicians: ${e.toString()}');
+    }
+  }
+
+  /// Get all users (technicians and admins)
+  Future<List<UserModel>> getAllUsers() async {
+    try {
+      final usersData = await _userService.getAllUsers();
+      return usersData.map((user) => UserModel.fromMap(user)).toList();
+    } catch (e) {
+      throw Exception('Failed to get users: ${e.toString()}');
     }
   }
 }

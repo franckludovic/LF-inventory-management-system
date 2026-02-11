@@ -37,7 +37,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Please change your default admin credentials for security.',
+                          'Sil vous plaît, changez vos identifiants par défaut pour sécuriser votre compte.',
                           style: TextStyle(
                             color: AppColors.warning,
                             fontSize: 14,
@@ -111,7 +111,7 @@ class ProfileScreen extends GetView<ProfileController> {
                   )),
                   const SizedBox(height: 4),
                   Obx(() => Text(
-                    'Employee ID: ${controller.employeeId.value}',
+                    'ID de L\'employer: ${controller.employeeId.value}',
                     style: TextStyle(
                       fontSize: 14,
                       color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -127,7 +127,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'General Information',
+                    'Informations Générales',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -149,14 +149,14 @@ class ProfileScreen extends GetView<ProfileController> {
                         Obx(() => ProfileListItem(
                           icon: Icons.mail,
                           title: controller.email.value,
-                          subtitle: 'Email Address',
+                          subtitle: 'Adresse Email',
                           showEditIcon: true,
                           onEditTap: controller.editEmail,
                         )),
                         Obx(() => ProfileListItem(
                           icon: Icons.business,
                           title: controller.department.value,
-                          subtitle: 'Department',
+                          subtitle: 'Depart ment',
                           showEditIcon: true,
                           onEditTap: controller.editDepartment,
                         )),
@@ -170,7 +170,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         Obx(() => ProfileListItem(
                           icon: Icons.calendar_today,
                           title: controller.joinedDate.value,
-                          subtitle: 'Joined Date',
+                          subtitle: 'Date d\'Adhésion',
                         )),
                       ],
                     ),
@@ -186,7 +186,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Account Settings',
+                    'Paramètres du Compte',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -207,7 +207,7 @@ class ProfileScreen extends GetView<ProfileController> {
                       children: [
                         ProfileListItem(
                           icon: Icons.security,
-                          title: 'Change Password',
+                          title: 'Changer le mot de passe',
                           subtitle: '',
                           showChevron: true,
                           onTap: controller.updatePassword,

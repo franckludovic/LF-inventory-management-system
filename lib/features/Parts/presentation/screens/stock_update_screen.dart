@@ -43,7 +43,7 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
               child: Obx(() {
                 if (controller.selectedPart.value == null) {
                   return const Center(
-                    child: Text('No part selected'),
+                    child: Text('Pas de pièce sélectionnée'),
                   );
                 }
 
@@ -111,7 +111,7 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Part Name',
+                                    'Nom de la pièce',
                                     style: TextStyle(
                                       color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                                       fontSize: 10,
@@ -165,7 +165,7 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Manufacturer',
+                                    'Fabricant',
                                     style: TextStyle(
                                       color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                                       fontSize: 10,

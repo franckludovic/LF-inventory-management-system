@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/strings.dart';
+import '../../../../core/controllers/navigation_controller.dart';
 import '../services/report_export_service.dart';
 
 class ReportDetailsController extends GetxController {
@@ -56,19 +57,31 @@ class ReportDetailsController extends GetxController {
       final qty = (log['quantite'] ?? 0) as int;
       final type = log['type'] ?? '';
 
-      if (type.toString().toLowerCase().contains('add')) {
+      // Use quantity sign to determine addition vs removal
+      if (qty > 0) {
         additions += qty;
       } else {
         removals += qty.abs();
       }
 
+      // Format the date properly
+      String formattedDate = '';
+      if (log['created_at'] != null) {
+        try {
+          final dateTime = DateTime.parse(log['created_at']);
+          formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+        } catch (e) {
+          formattedDate = log['created_at'].toString();
+        }
+      }
+
       processedActivities.add({
-        'date': log['date'] ?? '',
+        'date': formattedDate,
         'part': log['composant']?['designation'] ?? '—',
-        'location': log['emplacement']?['nom'] ?? '',
+        'location': log['sac']?['nom'] ?? '—',
         'type': type,
         'qty': qty,
-        'by': log['utilisateur']?['nom'] ?? '',
+        'by': log['utilisateur']?['nom'] ?? '—',
       });
     }
 
@@ -105,6 +118,9 @@ class ReportDetailsController extends GetxController {
   }
 
   void backToDashboard() {
-    Get.offAllNamed('/dashboard');
+    // Navigate to navigation menu and select dashboard (index 0)
+    final NavigationController navController = Get.find<NavigationController>();
+    navController.selectedIndex.value = 0;
+    Get.offAllNamed('/');
   }
 }

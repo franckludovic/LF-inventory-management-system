@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:lf_project/core/constants/strings.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
@@ -20,29 +21,29 @@ class ReportExportService {
         pageFormat: PdfPageFormat.a4,
         build: (context) => [
           pw.Text(
-            'Stock Activity Report',
+            AppStrings.stockActivityReportTitle,
             style: pw.TextStyle(
               fontSize: 22,
               fontWeight: pw.FontWeight.bold,
             ),
           ),
           pw.SizedBox(height: 8),
-          pw.Text('Period: $reportPeriod'),
-          pw.Text('Generated on: ${_today()}'),
+          pw.Text('${AppStrings.periodLabel} $reportPeriod'),
+          pw.Text('${AppStrings.generatedOn} ${_today()}'),
           pw.SizedBox(height: 8),
-          pw.Text('Total Additions: $totalAdditions'),
-          pw.Text('Total Removals: $totalRemovals'),
-          pw.Text('Total Records: ${activities.length}'),
+          pw.Text('${AppStrings.totalAdditionsLabel} $totalAdditions'),
+          pw.Text('${AppStrings.totalRemovalsLabel} $totalRemovals'),
+          pw.Text('${AppStrings.totalRecordsLabel} ${activities.length}'),
           pw.SizedBox(height: 16),
 
           pw.Table.fromTextArray(
-            headers: const [
-              'Date',
-              'Part',
-              'Type',
-              'Qty',
-              'By',
-              'Location',
+            headers: [
+              AppStrings.dateHeader,
+              AppStrings.partHeader,
+              AppStrings.typeHeader,
+              AppStrings.qtyHeader,
+              AppStrings.byHeader,
+              AppStrings.locationHeader,
             ],
             data: activities.map((a) {
               return [
@@ -69,7 +70,7 @@ class ReportExportService {
     List<Map<String, dynamic>> activities,
   ) async {
     final rows = <List<String>>[
-      ['Date', 'Part', 'Type', 'Qty', 'By', 'Location'],
+      [AppStrings.dateHeader, AppStrings.partHeader, AppStrings.typeHeader, AppStrings.qtyHeader, AppStrings.byHeader, AppStrings.locationHeader],
       ...activities.map(
         (a) => [
           a['date'] ?? '-',

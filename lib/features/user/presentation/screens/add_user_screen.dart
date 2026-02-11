@@ -322,7 +322,7 @@ class AddUserScreen extends GetView<AddUserController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'User Status',
+          'Statue du Compte',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -343,7 +343,7 @@ class AddUserScreen extends GetView<AddUserController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Block User',
+                'Bloquer l\'Utilisateur',
                 style: TextStyle(
                   color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                   fontSize: 16,

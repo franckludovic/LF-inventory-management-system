@@ -83,7 +83,7 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
                               searchcontroller.selectedCompany.value = newValue!;
                               searchcontroller.filterParts();
                             } else {
-                              searchcontroller.selectedCompany.value = 'All';
+                              searchcontroller.selectedCompany.value = 'Tout';
                               searchcontroller.filterParts();
                             }
                           },
@@ -94,7 +94,7 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
                             );
                           }).toList(),
                           decoration: InputDecoration(
-                            labelText: 'Company',
+                            labelText: 'Compagnie',
                             border: OutlineInputBorder(),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                             isDense: true,
@@ -123,7 +123,7 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
                             );
                           }).toList(),
                           decoration: InputDecoration(
-                            labelText: 'Location',
+                            labelText: 'Emplacement',
                             border: OutlineInputBorder(),
                             contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                             isDense: true,
@@ -152,7 +152,7 @@ class PartsManagementScreen extends GetView<PartsManagementController> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No parts found',
+                          'Aucune pièce trouvée',
                           style: TextStyle(
                             fontSize: 18,
                             color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
