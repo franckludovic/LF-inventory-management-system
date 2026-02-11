@@ -8,12 +8,13 @@ class ProfileController extends GetxController {
   final UserController _userController = Get.find<UserController>();
 
   // Observable variables for profile data
-  var userName = 'John Doe'.obs;
+  var userName = 'Utilisateur'.obs;
   var employeeId = 'TX-9942'.obs;
-  var email = 'j.doe@elevator-tech.com'.obs;
-  var department = 'Maintenance & Repairs'.obs;
-  var region = 'North District'.obs;
-  var joinedDate = 'January 12, 2023'.obs;
+  var email = 'utilisateur@example.com'.obs;
+  var department = 'Maintenance et Réparations'.obs;
+  var region = 'District Nord'.obs;
+  var joinedDate = '12 Janvier 2023'.obs;
+
 
   // Observable for user role
   var userRole = ''.obs;
@@ -79,8 +80,9 @@ class ProfileController extends GetxController {
       // Update UserController profile
       _userController.setUserProfile(profile);
     } catch (e) {
-      Get.snackbar('Error', 'Failed to load profile: $e');
+      Get.snackbar('Erreur', 'Échec du chargement du profil: $e');
     }
+
   }
 
   // Method to handle logout
@@ -93,20 +95,21 @@ class ProfileController extends GetxController {
   void navigateToPreferences() {
     // Implement navigation to preferences screen
     // For now, just a placeholder
-    Get.snackbar('Preferences', 'Navigate to Preferences Screen');
+    Get.snackbar('Préférences', 'Naviguer vers l\'écran des préférences');
   }
 
   // Method to navigate to security settings
   void navigateToSecurity() {
     // Implement navigation to security screen
     // For now, just a placeholder
-    Get.snackbar('Security', 'Navigate to Security & Password Screen');
+    Get.snackbar('Sécurité', 'Naviguer vers l\'écran de sécurité et mot de passe');
   }
+
 
   // Edit field methods
   void editName() async {
     showEditDialog(
-      title: 'Edit Name',
+      title: 'Modifier le nom',
       oldValue: userName.value,
       controller: nameController,
       onConfirm: () async {
@@ -115,36 +118,28 @@ class ProfileController extends GetxController {
           await _userService.updateUserProfile(_userController.accessToken.value, {'nom': newName});
           userName.value = newName;
           Get.back();
-          Get.snackbar('Success', 'Name updated successfully');
+          Get.snackbar('Succès', 'Nom mis à jour avec succès');
         } catch (e) {
-          Get.snackbar('Error', 'Failed to update name: $e');
+          Get.snackbar('Erreur', 'Échec de la mise à jour du nom: $e');
         }
       },
     );
   }
 
+
   void editEmail() async {
-    showEditDialog(
-      title: 'Edit Email',
-      oldValue: email.value,
-      controller: emailController,
-      onConfirm: () async {
-        final newEmail = emailController.text.trim();
-        try {
-          await _userService.updateUserProfile(_userController.accessToken.value, {'email': newEmail});
-          email.value = newEmail;
-          Get.back();
-          Get.snackbar('Success', 'Email updated successfully');
-        } catch (e) {
-          Get.snackbar('Error', 'Failed to update email: $e');
-        }
-      },
+    // L'email ne peut pas être modifié - fonctionnalité non supportée par le backend
+    Get.snackbar(
+      'Information',
+      'L\'adresse email ne peut pas être modifiée',
+      snackPosition: SnackPosition.BOTTOM,
     );
   }
+
 
   void editDepartment() async {
     showEditDialog(
-      title: 'Edit Department',
+      title: 'Modifier le département',
       oldValue: department.value,
       controller: departmentController,
       onConfirm: () async {
@@ -153,17 +148,18 @@ class ProfileController extends GetxController {
           await _userService.updateUserProfile(_userController.accessToken.value, {'Department': newDepartment});
           department.value = newDepartment;
           Get.back();
-          Get.snackbar('Success', 'Department updated successfully');
+          Get.snackbar('Succès', 'Département mis à jour avec succès');
         } catch (e) {
-          Get.snackbar('Error', 'Failed to update department: $e');
+          Get.snackbar('Erreur', 'Échec de la mise à jour du département: $e');
         }
       },
     );
   }
 
+
   void editRegion() async {
     showEditDialog(
-      title: 'Edit Region',
+      title: 'Modifier la région',
       oldValue: region.value,
       controller: regionController,
       onConfirm: () async {
@@ -172,13 +168,14 @@ class ProfileController extends GetxController {
           await _userService.updateUserProfile(_userController.accessToken.value, {'region': newRegion});
           region.value = newRegion;
           Get.back();
-          Get.snackbar('Success', 'Region updated successfully');
+          Get.snackbar('Succès', 'Région mise à jour avec succès');
         } catch (e) {
-          Get.snackbar('Error', 'Failed to update region: $e');
+          Get.snackbar('Erreur', 'Échec de la mise à jour de la région: $e');
         }
       },
     );
   }
+
 
   void updatePassword() {
     showPasswordUpdateDialog();
@@ -197,17 +194,17 @@ class ProfileController extends GetxController {
   void showDefaultCredentialsWarningModal() {
     Get.dialog(
       AlertDialog(
-        title: const Text('Security Alert'),
+        title: const Text('Alerte de sécurité'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'You are currently using the default admin credentials. For security reasons, please change your email and password immediately.',
+              'Vous utilisez actuellement les identifiants administrateur par défaut. Pour des raisons de sécurité, veuillez changer votre email et mot de passe immédiatement.',
               style: TextStyle(fontSize: 14),
             ),
             SizedBox(height: 16),
             Text(
-              'This helps protect your account and data from unauthorized access.',
+              'Cela aide à protéger votre compte et vos données contre les accès non autorisés.',
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -215,19 +212,20 @@ class ProfileController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () {
               Get.back();
               navigateToSecurity();
             },
-            child: const Text('Change Password'),
+            child: const Text('Changer le mot de passe'),
           ),
         ],
       ),
     );
   }
+
 
   void showEditDialog({
     required String title,
@@ -241,12 +239,12 @@ class ProfileController extends GetxController {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Current: $oldValue'),
+            Text('Actuel: $oldValue'),
             const SizedBox(height: 16),
             TextField(
               controller: controller,
               decoration: const InputDecoration(
-                labelText: 'New Value',
+                labelText: 'Nouvelle valeur',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -255,21 +253,22 @@ class ProfileController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: onConfirm,
-            child: const Text('Confirm'),
+            child: const Text('Confirmer'),
           ),
         ],
       ),
     );
   }
 
+
   void showPasswordUpdateDialog() {
     Get.dialog(
       AlertDialog(
-        title: const Text('Update Password'),
+        title: const Text('Mettre à jour le mot de passe'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -277,7 +276,7 @@ class ProfileController extends GetxController {
               controller: oldPasswordController,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Current Password',
+                labelText: 'Mot de passe actuel',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -286,7 +285,7 @@ class ProfileController extends GetxController {
               controller: newPasswordController,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'New Password',
+                labelText: 'Nouveau mot de passe',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -295,7 +294,7 @@ class ProfileController extends GetxController {
               controller: confirmPasswordController,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Confirm New Password',
+                labelText: 'Confirmer le nouveau mot de passe',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -304,30 +303,31 @@ class ProfileController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: const Text('Annuler'),
           ),
           ElevatedButton(
             onPressed: () async {
               if (newPasswordController.text != confirmPasswordController.text) {
-                Get.snackbar('Error', 'Passwords do not match');
+                Get.snackbar('Erreur', 'Les mots de passe ne correspondent pas');
                 return;
               }
               try {
                 await _userService.changePassword(_userController.accessToken.value, newPasswordController.text);
                 Get.back();
-                Get.snackbar('Success', 'Password updated successfully');
+                Get.snackbar('Succès', 'Mot de passe mis à jour avec succès');
                 // Clear controllers
                 oldPasswordController.clear();
                 newPasswordController.clear();
                 confirmPasswordController.clear();
               } catch (e) {
-                Get.snackbar('Error', 'Failed to update password: $e');
+                Get.snackbar('Erreur', 'Échec de la mise à jour du mot de passe: $e');
               }
             },
-            child: const Text('Update'),
+            child: const Text('Mettre à jour'),
           ),
         ],
       ),
     );
   }
+
 }

@@ -38,7 +38,7 @@ class PartActionsWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          // Admin-only buttons
+          /* // Admin-only buttons - TEMPORARILY COMMENTED OUT
           if (userController.isAdmin) ...[
             Row(
               children: [
@@ -89,6 +89,8 @@ class PartActionsWidget extends StatelessWidget {
               ],
             ),
           ],
+          */
+
         ],
       ),
     );

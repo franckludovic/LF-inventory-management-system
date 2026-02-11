@@ -12,10 +12,11 @@ class UserService {
       if (response.statusCode == 200) {
         return response.data as List<dynamic>;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to get users');
+        throw Exception(response.data['Error'] ?? 'Échec de la récupération des utilisateurs');
       }
     } catch (e) {
-      throw Exception('Failed to get users: ${e.toString()}');
+      throw Exception('Échec de la récupération des utilisateurs: ${e.toString()}');
+
     }
   }
 
@@ -46,10 +47,11 @@ class UserService {
       if (response.statusCode == 201) {
         return response.data;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to create user');
+        throw Exception(response.data['Error'] ?? 'Échec de la création de l\'utilisateur');
       }
     } catch (e) {
-      throw Exception('Failed to create user: ${e.toString()}');
+      throw Exception('Échec de la création de l\'utilisateur: ${e.toString()}');
+
     }
   }
 
@@ -61,10 +63,11 @@ class UserService {
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to promote user');
+        throw Exception(response.data['Error'] ?? 'Échec de la promotion de l\'utilisateur');
       }
     } catch (e) {
-      throw Exception('Failed to promote user: ${e.toString()}');
+      throw Exception('Échec de la promotion de l\'utilisateur: ${e.toString()}');
+
     }
   }
 
@@ -77,10 +80,11 @@ class UserService {
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to get user profile');
+        throw Exception(response.data['Error'] ?? 'Échec de la récupération du profil utilisateur');
       }
     } catch (e) {
-      throw Exception('Failed to get user profile: ${e.toString()}');
+      throw Exception('Échec de la récupération du profil utilisateur: ${e.toString()}');
+
     }
   }
 
@@ -94,10 +98,11 @@ class UserService {
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to update user profile');
+        throw Exception(response.data['Error'] ?? 'Échec de la mise à jour du profil utilisateur');
       }
     } catch (e) {
-      throw Exception('Failed to update user profile: ${e.toString()}');
+      throw Exception('Échec de la mise à jour du profil utilisateur: ${e.toString()}');
+
     }
   }
 
@@ -109,27 +114,29 @@ class UserService {
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to update user');
+        throw Exception(response.data['Error'] ?? 'Échec de la mise à jour de l\'utilisateur');
       }
     } catch (e) {
-      throw Exception('Failed to update user: ${e.toString()}');
+      throw Exception('Échec de la mise à jour de l\'utilisateur: ${e.toString()}');
+
     }
   }
 
   /// Change user password
   Future<Map<String, dynamic>> changePassword(String accessToken, String newPassword) async {
     try {
-      final response = await _apiService.put('/api/users/change-password',
+      final response = await _apiService.patch('/api/users/change-password',
           data: {'motDePasse': newPassword},
           options: Options(headers: {'Authorization': 'Bearer $accessToken'}));
 
       if (response.statusCode == 200) {
         return response.data;
       } else {
-        throw Exception(response.data['Error'] ?? 'Failed to change password');
+        throw Exception(response.data['Error'] ?? 'Échec du changement de mot de passe');
       }
     } catch (e) {
-      throw Exception('Failed to change password: ${e.toString()}');
+      throw Exception('Échec du changement de mot de passe: ${e.toString()}');
     }
   }
+
 }

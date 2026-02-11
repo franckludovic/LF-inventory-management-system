@@ -37,7 +37,8 @@ class ProfileScreen extends GetView<ProfileController> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Sil vous plaît, changez vos identifiants par défaut pour sécuriser votre compte.',
+                          'S\'il vous plaît, changez vos identifiants par défaut pour sécuriser votre compte.',
+
                           style: TextStyle(
                             color: AppColors.warning,
                             fontSize: 14,
@@ -111,7 +112,8 @@ class ProfileScreen extends GetView<ProfileController> {
                   )),
                   const SizedBox(height: 4),
                   Obx(() => Text(
-                    'ID de L\'employer: ${controller.employeeId.value}',
+                    'ID de l\'employé: ${controller.employeeId.value}',
+
                     style: TextStyle(
                       fontSize: 14,
                       color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -150,20 +152,22 @@ class ProfileScreen extends GetView<ProfileController> {
                           icon: Icons.mail,
                           title: controller.email.value,
                           subtitle: 'Adresse Email',
-                          showEditIcon: true,
-                          onEditTap: controller.editEmail,
+                          showEditIcon: false,
                         )),
+
                         Obx(() => ProfileListItem(
                           icon: Icons.business,
                           title: controller.department.value,
-                          subtitle: 'Depart ment',
+                          subtitle: 'Département',
+
                           showEditIcon: true,
                           onEditTap: controller.editDepartment,
                         )),
                         Obx(() => ProfileListItem(
                           icon: Icons.location_on,
                           title: controller.region.value,
-                          subtitle: 'Region',
+                          subtitle: 'Région',
+
                           showEditIcon: true,
                           onEditTap: controller.editRegion,
                         )),
@@ -238,7 +242,8 @@ class ProfileScreen extends GetView<ProfileController> {
                   children: [
                     Icon(Icons.logout),
                     SizedBox(width: 8),
-                    Text('Log Out'),
+                    Text('Déconnexion'),
+
                   ],
                 ),
               ),
