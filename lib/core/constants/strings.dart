@@ -116,8 +116,8 @@ class AppStrings {
   // Generate Report Screen
   static const String generateReport = 'Générer un rapport';
   static const String reportType = 'Type de rapport';
-  static const String weeklyStockActivityReport = 'Rapport d\'activité hebdomadaire du stock';
-  static const String monthlySummary = 'Résumé mensuel';
+  static const String HebdomadaireStockActivityReport = 'Rapport d\'activité hebdomadaire du stock';
+  static const String MensuelSummary = 'Résumé mensuel';
   static const String technicianUsageReport = 'Rapport d\'utilisation des techniciens';
   static const String lowStockAlerts = 'Alertes de stock faible';
   static const String dateRange = 'Période';
@@ -159,8 +159,8 @@ class AppStrings {
   static const String selectReportType = 'Sélectionner le type de rapport';
   static const String selectUser = 'Sélectionner un utilisateur';
   static const String allUsers = 'Tous les utilisateurs';
-  static const String monthly = 'Mensuel';
-  static const String weekly = 'Hebdomadaire';
+  static const String Mensuel = 'Mensuel';
+  static const String Hebdomadaire = 'Hebdomadaire';
   static const String custom = 'Personnalisé';
   static const String invalidDateFormat = 'Format de date invalide';
   static const String startDateAfterEndDate = 'La date de début ne peut pas être après la date de fin';

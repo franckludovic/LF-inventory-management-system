@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/strings.dart';
+
 import '../../../../core/controllers/navigation_controller.dart';
 import '../services/report_export_service.dart';
+
 
 class ReportDetailsController extends GetxController {
   // ─────────────────── Observables ───────────────────
@@ -95,29 +97,25 @@ class ReportDetailsController extends GetxController {
   // ─────────────────── Actions ───────────────────
   Future<void> exportPDF() async {
     try {
-      await _exportService.exportPDF(
+      final success = await _exportService.exportPDF(
         activities: activities,
         reportPeriod: reportPeriod.value,
         totalAdditions: totalAdditions.value,
         totalRemovals: totalRemovals.value,
       );
 
-      Get.snackbar('Success', AppStrings.exportPDFSuccess);
+      if (success) {
+        Get.snackbar('Success', AppStrings.exportPDFSuccess);
+      } else {
+        Get.snackbar('Info', 'PDF export cancelled or failed');
+      }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to export PDF');
-    }
-  }
-
-  Future<void> exportCSV() async {
-    try {
-      await _exportService.exportCSV(activities);
-      Get.snackbar('Success', AppStrings.exportCSVSuccess);
-    } catch (e) {
-      Get.snackbar('Error', 'Failed to export CSV');
+      Get.snackbar('Error', 'Failed to export PDF: ${e.toString()}');
     }
   }
 
   void backToDashboard() {
+
     // Navigate to navigation menu and select dashboard (index 0)
     final NavigationController navController = Get.find<NavigationController>();
     navController.selectedIndex.value = 0;

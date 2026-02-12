@@ -80,8 +80,7 @@ class AddUserScreen extends GetView<AddUserController> {
             _buildRoleDropdown(isDark),
             const SizedBox(height: 16),
 
-            // Block/Unblock User (only in edit mode)
-            if (controller.isEditing.value) _buildBlockUnblockToggle(isDark),
+
           ],
         ),
       ),
@@ -175,14 +174,14 @@ class AddUserScreen extends GetView<AddUserController> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          AppStrings.temporaryPassword,
+        Obx(() => Text(
+          controller.isEditing.value ? 'Nouveau mot de passe (optionnel)' : AppStrings.temporaryPassword,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
           ),
-        ),
+        )),
         const SizedBox(height: 8),
         Obx(() => TextField(
           controller: controller.passwordController,
@@ -192,7 +191,9 @@ class AddUserScreen extends GetView<AddUserController> {
             fontSize: 16,
           ),
           decoration: InputDecoration(
-            hintText: AppStrings.setTemporaryPassword,
+            hintText: controller.isEditing.value 
+                ? 'Laissez vide pour conserver l\'actuel' 
+                : AppStrings.setTemporaryPassword,
             hintStyle: TextStyle(
               color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
             ),
@@ -242,13 +243,15 @@ class AddUserScreen extends GetView<AddUserController> {
           ),
         )),
         const SizedBox(height: 4),
-        Text(
-          AppStrings.passwordHint,
+        Obx(() => Text(
+          controller.isEditing.value
+              ? 'Entrez un nouveau mot de passe pour réinitialiser celui de l\'utilisateur'
+              : AppStrings.passwordHint,
           style: TextStyle(
             color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
             fontSize: 12,
           ),
-        ),
+        )),
         Obx(() => controller.passwordError.value.isNotEmpty
             ? Padding(
                 padding: const EdgeInsets.only(top: 4),
@@ -317,60 +320,7 @@ class AddUserScreen extends GetView<AddUserController> {
     );
   }
 
-  Widget _buildBlockUnblockToggle(bool isDark) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Statue du Compte',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.cardBackgroundDark : AppColors.cardBackgroundLight,
-            border: Border.all(
-              color: isDark ? AppColors.borderDark : AppColors.borderLight,
-            ),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Bloquer l\'Utilisateur',
-                style: TextStyle(
-                  color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                  fontSize: 16,
-                ),
-              ),
-              Obx(() => Switch(
-                value: controller.isUserBlocked.value,
-                onChanged: (value) {
-                  controller.isUserBlocked.value = value;
-                },
-                activeColor: AppColors.primary,
-                activeTrackColor: AppColors.primary.withOpacity(0.3),
-              )),
-            ],
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Note: Block/Unblock functionality is not yet implemented in the backend.',
-          style: TextStyle(
-            color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
-            fontSize: 12,
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildBottomButtons(bool isDark) {
     return Container(

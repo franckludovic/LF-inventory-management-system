@@ -107,32 +107,7 @@ class TechnicianListItem extends GetView<UserManagementController> {
                   ],
                 ),
               ),
-              SizedBox(
-                width: 84,
-                child: ElevatedButton(
-                  onPressed: () => controller.toggleUserStatus(technician['id']),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isBlocked
-                        ? AppColors.primary
-                        : (isDark ? AppColors.buttonSecondaryDark : AppColors.buttonSecondaryLight),
-                    foregroundColor: isBlocked
-                        ? Colors.white
-                        : (isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight),
-                    elevation: 0,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                  child: Text(
-                    isBlocked ? AppStrings.unblock : AppStrings.block,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
+
             ],
           ),
         ),

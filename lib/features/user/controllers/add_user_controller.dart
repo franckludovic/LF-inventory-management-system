@@ -217,7 +217,7 @@ class AddUserController extends GetxController {
 
     try {
       if (isEditing.value) {
-        // Update user
+        // Update user data
         await _userService.updateUser(
           userToEdit['id'],
           {
@@ -228,8 +228,13 @@ class AddUserController extends GetxController {
           },
         );
 
-        // Note: Block/Unblock functionality not implemented in backend yet
-        // The isUserBlocked toggle is for UI only
+        // If password was entered, update it too (admin password reset feature)
+        if (passwordController.text.isNotEmpty) {
+          await _userService.changeUserPassword(
+            userToEdit['id'],
+            passwordController.text,
+          );
+        }
 
         Get.snackbar(
           'Succès',

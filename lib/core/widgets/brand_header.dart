@@ -10,29 +10,23 @@ class BrandHeader extends StatelessWidget {
     return Column(
       children: [
         Container(
-          width: 80,
-          height: 80,
+          width: 120,
+          height: 120,
           decoration: BoxDecoration(
             color: AppTheme.primary.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            Icons.engineering,
-            color: AppTheme.primary,
-            size: 40,
+          child: ClipOval(
+            child: Image.asset(
+              'assets/logo.png',
+              width: 80,
+              height: 80,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
+
         const SizedBox(height: 16),
-        Text(
-          AppStrings.appTitle,
-          style: TextStyle(
-            color: Theme.of(context).textTheme.headlineSmall?.color,
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
         Text(
           AppStrings.appSubTitle,
           style: TextStyle(

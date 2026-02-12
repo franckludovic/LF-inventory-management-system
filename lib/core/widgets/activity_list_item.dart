@@ -24,7 +24,7 @@ class ActivityListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isAdded = type == 'Added';
+    final isAdded = type == 'ADDED';
     final userController = Get.find<UserController>();
 
     return Container(
@@ -92,7 +92,7 @@ class ActivityListItem extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                isAdded ? 'Added' : 'Rem.',
+                isAdded ? 'ADDED' : 'REM',
                 style: TextStyle(
                   color: isAdded ? Colors.green[700] : Colors.red[700],
                   fontSize: 10,
@@ -121,12 +121,13 @@ class ActivityListItem extends StatelessWidget {
           // By - Only show for admins
           if (userController.isAdmin)
             SizedBox(
-              width: 30,
+              width: 40,
               child: Text(
                 by,
                 style: TextStyle(
                   color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                   fontSize: 12,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 textAlign: TextAlign.right,
               ),

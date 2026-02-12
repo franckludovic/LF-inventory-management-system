@@ -123,7 +123,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                             ],
                           );
                         } else {
-                          // For Monthly and Weekly, show the date range as read-only info
+                          // For Mensuel and Hebdomadaire, show the date range as read-only info
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -155,7 +155,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        'From: ${controller.startDateController.text}',
+                                        'De: ${controller.startDateController.text}',
                                         style: TextStyle(
                                           color: isDark
                                               ? AppColors.textPrimaryDark
@@ -166,7 +166,7 @@ class GenerateReportScreen extends GetView<GenerateReportController> {
                                     const SizedBox(width: 16),
                                     Expanded(
                                       child: Text(
-                                        'To: ${controller.endDateController.text}',
+                                        'A: ${controller.endDateController.text}',
                                         style: TextStyle(
                                           color: isDark
                                               ? AppColors.textPrimaryDark

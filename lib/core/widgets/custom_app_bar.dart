@@ -53,12 +53,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
-                    Icons.precision_manufacturing,
-                    color: AppColors.primary,
-                    size: 24,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
+
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(

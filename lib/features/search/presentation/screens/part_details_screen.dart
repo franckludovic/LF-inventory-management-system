@@ -34,12 +34,6 @@ class PartDetailsScreen extends GetView<PartDetailsController> {
             color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: controller.sharePart,
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(

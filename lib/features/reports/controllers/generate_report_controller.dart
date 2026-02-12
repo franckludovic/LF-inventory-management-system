@@ -12,7 +12,7 @@ class GenerateReportController extends GetxController {
   // ─────────────────── State ───────────────────
   final reports = <ReportModel>[].obs;
 
-  final selectedReportType = 'Monthly'.obs;
+  final selectedReportType = 'Mensuel'.obs;
   final selectedPartName = 'All Parts'.obs;
   final selectedUserId = ''.obs;
 
@@ -32,8 +32,8 @@ class GenerateReportController extends GetxController {
 
   // ─────────────────── Constants ───────────────────
   final reportTypes = const [
-    'Monthly',
-    'Weekly',
+    'Mensuel',
+    'Hebdomadaire',
     'Custom',
   ];
 
@@ -67,7 +67,7 @@ class GenerateReportController extends GetxController {
     return date.toIso8601String().split('T').first;
   }
 
-  void _setMonthlyDates() {
+  void _setMensuelDates() {
     final now = DateTime.now();
     final oneMonthAgo = DateTime(now.year, now.month - 1, now.day);
 
@@ -75,7 +75,7 @@ class GenerateReportController extends GetxController {
     endDateController.text = _formatDate(now);
   }
 
-  void _setWeeklyDates() {
+  void _setHebdomadaireDates() {
     final now = DateTime.now();
     final oneWeekAgo = now.subtract(const Duration(days: 7));
 
@@ -83,7 +83,7 @@ class GenerateReportController extends GetxController {
     endDateController.text = _formatDate(now);
   }
 
-  void _setMonthlyAutoDates() {
+  void _setMensuelAutoDates() {
     final now = DateTime.now();
     final oneMonthAgo = DateTime(now.year, now.month - 1, now.day);
 
@@ -124,11 +124,11 @@ class GenerateReportController extends GetxController {
   void updateSelectedReportType(String? value) {
     selectedReportType.value = value ?? reportTypes.first;
 
-    // Handle automatic date setting for Monthly and Weekly
-    if (value == 'Monthly') {
-      _setMonthlyDates();
-    } else if (value == 'Weekly') {
-      _setWeeklyDates();
+    // Handle automatic date setting for Mensuel and Hebdomadaire
+    if (value == 'Mensuel') {
+      _setMensuelDates();
+    } else if (value == 'Hebdomadaire') {
+      _setHebdomadaireDates();
     }
     // For Custom, dates remain editable by user
   }

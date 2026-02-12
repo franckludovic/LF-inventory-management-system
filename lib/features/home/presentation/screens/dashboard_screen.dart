@@ -205,8 +205,8 @@ class DashboardScreen extends GetView<DashboardController> {
                               child: Row(
                                 children: [
                                 Icon(
-                                  (type == 'ADD') ? Icons.add_circle : Icons.remove_circle,
-                                  color: (type == 'ADD') ? AppColors.success : AppColors.error,
+                                  (type == 'ADDED') ? Icons.add_circle : Icons.remove_circle,
+                                  color: (type == 'ADDED') ? AppColors.success : AppColors.error,
                                 ),
 
                                   const SizedBox(width: 12),

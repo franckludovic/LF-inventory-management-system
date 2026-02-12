@@ -44,15 +44,27 @@ class AddPartController extends GetxController {
   void onLocationSelected(String? location) {
     if (location != null) {
       selectedLocation.value = location;
-      // Extract sac name from display string (e.g., "sac 1 12/50" -> "sac 1")
+      // Extract sac name from display string (e.g., "sac 1 12/50" -> "Sac_1")
       final parts = location.split(' ');
       if (parts.length >= 2) {
-        selectedSacName.value = '${parts[0]} ${parts[1]}';
+        final firstPart = parts[0];
+        
+        // If already in correct format with underscore (e.g., "Sac_1"), use it directly
+        if (firstPart.contains('_')) {
+          selectedSacName.value = firstPart;
+        } else {
+          // Convert "sac 1" format to "Sac_1" format expected by backend
+          final prefix = parts[0];
+          final suffix = parts[1];
+          // Capitalize first letter of prefix, uppercase the suffix (for letter cases like "a" -> "A")
+          selectedSacName.value = '${prefix[0].toUpperCase()}${prefix.substring(1)}_${suffix.toUpperCase()}';
+        }
       } else {
         selectedSacName.value = location;
       }
     }
   }
+
 
   Future<void> pickImage(ImageSource source) async {
     try {

@@ -90,12 +90,17 @@ class AddLocationController extends GetxController {
 
       Map<String, dynamic> result;
       if (editingLocation != null) {
+        // Validate that we have a location ID for update
+        if (editingLocation!.id == null || editingLocation!.id!.isEmpty) {
+          throw Exception('Location ID is missing. Cannot update location.');
+        }
         // Update existing location
         result = await _locationService.updateLocation(
-          locationId: editingLocation!.id ?? '', // Assuming LocationModel has id field
+          locationId: editingLocation!.id!,
           name: nameController.text.trim(),
           maxQuantity: maxQty,
         );
+
       } else {
         // Create new location
         result = await _locationService.createLocation(

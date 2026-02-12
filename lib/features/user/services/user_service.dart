@@ -139,4 +139,22 @@ class UserService {
     }
   }
 
+  /// Change another user's password (admin only)
+  Future<Map<String, dynamic>> changeUserPassword(String userId, String newPassword) async {
+    try {
+      final response = await _apiService.patch(
+        '/api/users/change-password/$userId',
+        data: {'motDePasse': newPassword},
+      );
+
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        throw Exception(response.data['Error'] ?? 'Échec du changement de mot de passe');
+      }
+    } catch (e) {
+      throw Exception('Échec du changement de mot de passe: ${e.toString()}');
+    }
+  }
+
 }

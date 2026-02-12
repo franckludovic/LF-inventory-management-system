@@ -53,13 +53,6 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                             textAlign: TextAlign.center,
                           ),
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                    ),
-                    onPressed: () {},
-                  ),
                 ],
               ),
             ),
@@ -89,7 +82,7 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                               Expanded(
                                 child: Obx(() => ReportSummaryCard(
                                   label: AppStrings.totalAdditions,
-                                  value: '+${controller.totalAdditions.value}',
+                                  value: controller.totalAdditions.value == 0 ? '0' :'+${controller.totalAdditions.value}',
                                   iconColor: Colors.green[600],
                                 )),
                               ),
@@ -97,7 +90,7 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                               Expanded(
                                 child: Obx(() => ReportSummaryCard(
                                   label: AppStrings.totalRemovals,
-                                  value: '-${controller.totalRemovals.value}',
+                                  value: controller.totalRemovals.value == 0 ? '0' : '-${controller.totalRemovals.value}',
                                   iconColor: Colors.red[600],
                                 )),
                               ),
@@ -288,21 +281,7 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: controller.exportCSV,
-                          icon: const Icon(Icons.table_chart, size: 20),
-                          label: Text(AppStrings.exportCSV),
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            side: BorderSide(
-                              color: isDark ? AppColors.borderDark : AppColors.borderLight,
-                            ),
-                            foregroundColor: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-                          ),
-                        ),
-                      ),
+
                     ],
                   ),
                 ],

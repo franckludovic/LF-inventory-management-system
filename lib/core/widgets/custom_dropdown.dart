@@ -35,7 +35,9 @@ class CustomDropdown extends StatelessWidget {
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
+          isExpanded: true,
           items: items.map<DropdownMenuItem<String>>((String item) {
+
             return DropdownMenuItem<String>(
               value: item,
               child: Text(

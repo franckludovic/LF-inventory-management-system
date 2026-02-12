@@ -14,11 +14,13 @@ class LocationModel {
   // Factory constructor to create LocationModel from backend sac data
   factory LocationModel.fromMap(Map<String, dynamic> map) {
     return LocationModel(
+      id: map['id']?.toString(),
       name: map['nom'] ?? '',
       maxQuantity: map['capaciteMax'],
       totalQuantity: map['quantite_total'] ?? 0,
     );
   }
+
 
   // Convert to map
   Map<String, dynamic> toMap() {
