@@ -338,20 +338,34 @@ class AddUserScreen extends GetView<AddUserController> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Obx(() => ElevatedButton.icon(
-            onPressed: controller.isFormValid.value ? controller.onSaveUser : null,
-            icon: const Icon(Icons.person_add, size: 20),
-            label: Text(controller.isEditing.value ? 'Update User' : AppStrings.saveTechnician),
+            onPressed: (controller.isFormValid.value && !controller.isLoading.value) ? controller.onSaveUser : null,
+            icon: controller.isLoading.value
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : const Icon(Icons.person_add, size: 20),
+            label: Text(
+              controller.isLoading.value
+                  ? 'Enregistrement...'
+                  : (controller.isEditing.value ? 'Mettre à jour' : AppStrings.saveTechnician),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: controller.isFormValid.value ? AppColors.primary : AppColors.textMutedLight,
+              backgroundColor: (controller.isFormValid.value && !controller.isLoading.value) ? AppColors.primary : AppColors.textMutedLight,
               foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 56),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              elevation: controller.isFormValid.value ? 2 : 0,
-              shadowColor: controller.isFormValid.value ? AppColors.shadowPrimary : null,
+              elevation: (controller.isFormValid.value && !controller.isLoading.value) ? 2 : 0,
+              shadowColor: (controller.isFormValid.value && !controller.isLoading.value) ? AppColors.shadowPrimary : null,
             ),
           )),
+
           const SizedBox(height: 12),
           OutlinedButton(
             onPressed: controller.onCancel,

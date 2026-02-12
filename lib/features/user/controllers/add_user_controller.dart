@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/constants/strings.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../services/user_service.dart';
+
 
 class AddUserController extends GetxController {
   // Form controllers
@@ -23,8 +25,10 @@ class AddUserController extends GetxController {
   // Observable variables for form validation
   var isPasswordVisible = false.obs;
   var isFormValid = false.obs;
+  var isLoading = false.obs;
 
   // Form validation
+
   var fullNameError = ''.obs;
   var emailError = ''.obs;
   var departmentError = ''.obs;
@@ -134,15 +138,14 @@ class AddUserController extends GetxController {
 
   Future<void> onSaveTechnician() async {
     if (!isFormValid.value) {
-      Get.snackbar(
+      SnackbarUtils.showError(
         'Erreur de validation',
         'Veuillez remplir tous les champs requis correctement',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
       return;
     }
+
+    isLoading.value = true;
 
     try {
       // Determine role based on selection
@@ -159,26 +162,23 @@ class AddUserController extends GetxController {
         role: role,
       );
 
-      Get.snackbar(
+      SnackbarUtils.showSuccess(
         'Succès',
         'Utilisateur ajouté avec succès!',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
       );
 
       // Navigate back to user management
       Get.back();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to add user: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      SnackbarUtils.showError(
+        'Erreur',
+        'Échec de l\'ajout de l\'utilisateur: $e',
       );
+    } finally {
+      isLoading.value = false;
     }
   }
+
 
   void loadUserForEditing(Map<String, dynamic> user) {
     isEditing.value = true;
@@ -205,15 +205,14 @@ class AddUserController extends GetxController {
 
   Future<void> onSaveUser() async {
     if (!isFormValid.value) {
-      Get.snackbar(
+      SnackbarUtils.showError(
         'Erreur de validation',
         'Veuillez remplir tous les champs requis correctement',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
       return;
     }
+
+    isLoading.value = true;
 
     try {
       if (isEditing.value) {
@@ -236,12 +235,9 @@ class AddUserController extends GetxController {
           );
         }
 
-        Get.snackbar(
+        SnackbarUtils.showSuccess(
           'Succès',
           'Utilisateur mis à jour avec succès!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
         );
 
         // Return updated user data to update the list
@@ -270,12 +266,9 @@ class AddUserController extends GetxController {
           role: role,
         );
 
-        Get.snackbar(
+        SnackbarUtils.showSuccess(
           'Succès',
           'Utilisateur ajouté avec succès!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
         );
 
         // Return new user data to add to the list
@@ -292,15 +285,15 @@ class AddUserController extends GetxController {
         Get.back(result: newUser);
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to ${isEditing.value ? 'update' : 'add'} user: $e',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+      SnackbarUtils.showError(
+        'Erreur',
+        'Échec de ${isEditing.value ? 'la mise à jour' : 'l\'ajout'} de l\'utilisateur: $e',
       );
+    } finally {
+      isLoading.value = false;
     }
   }
+
 
   void onCancel() {
     Get.back();

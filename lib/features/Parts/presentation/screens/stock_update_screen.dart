@@ -344,32 +344,55 @@ class StockUpdateScreen extends GetView<StockUpdateController> {
             child: Column(
               children: [
                 // Confirm Change Button
-                ElevatedButton(
-                  onPressed: controller.confirmChange,
+                Obx(() => ElevatedButton(
+                  onPressed: controller.isLoading.value ? null : controller.confirmChange,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: controller.isLoading.value ? AppColors.textMutedLight : AppColors.primary,
                     foregroundColor: Colors.white,
                     minimumSize: const Size(double.infinity, 56),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 4,
+                    elevation: controller.isLoading.value ? 0 : 4,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.check_circle, size: 24),
-                      const SizedBox(width: 8),
-                      Text(
-                        AppStrings.confirmChange,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                  child: controller.isLoading.value
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Mise à jour...',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.check_circle, size: 24),
+                            const SizedBox(width: 8),
+                            Text(
+                              AppStrings.confirmChange,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ),
+                )),
+
                 const SizedBox(height: 12),
 
                 // Return to Management Button

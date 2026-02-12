@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/models/part_model.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../services/parts_service.dart';
 import '../../../core/controllers/user_controller.dart';
 import '../../../features/location/services/location_service.dart';
+
 
 class AddPartController extends GetxController {
   // Form controllers
@@ -80,8 +82,9 @@ class AddPartController extends GetxController {
         selectedImagePath.value = pickedFile.path;
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to pick image: $e');
+      SnackbarUtils.showError('Erreur', 'Échec de la sélection de l\'image: $e');
     }
+
   }
 
   void onUploadPressed() {
@@ -94,27 +97,28 @@ class AddPartController extends GetxController {
 
   bool validateForm() {
     if (partNameController.text.trim().isEmpty) {
-      Get.snackbar('Validation Error', 'Part name is required');
+      SnackbarUtils.showError('Erreur de validation', 'Le nom de la pièce est requis');
       return false;
     }
 
     if (designationController.text.trim().isEmpty) {
-      Get.snackbar('Validation Error', 'Designation/Reference is required');
+      SnackbarUtils.showError('Erreur de validation', 'La désignation/référence est requise');
       return false;
     }
 
     if (manufacturerController.text.trim().isEmpty) {
-      Get.snackbar('Validation Error', 'Manufacturer is required');
+      SnackbarUtils.showError('Erreur de validation', 'Le fabricant est requis');
       return false;
     }
 
     if (selectedLocation.value.isEmpty) {
-      Get.snackbar('Validation Error', 'Please select a location');
+      SnackbarUtils.showError('Erreur de validation', 'Veuillez sélectionner une localisation');
       return false;
     }
 
     return true;
   }
+
 
   Future<void> onSavePressed() async {
     if (!validateForm()) return;
@@ -140,13 +144,14 @@ class AddPartController extends GetxController {
       // Navigate back to parts management
       Get.back(result: result);
 
-      Get.snackbar('Success', 'Part added successfully');
+      SnackbarUtils.showSuccess('Succès', 'Pièce ajoutée avec succès');
 
     } catch (e) {
-      Get.snackbar('Error', 'Failed to save part: $e');
+      SnackbarUtils.showError('Erreur', 'Échec de l\'enregistrement de la pièce: $e');
     } finally {
       isLoading.value = false;
     }
+
   }
 
   Future<void> loadAvailableLocations() async {
@@ -156,15 +161,16 @@ class AddPartController extends GetxController {
 
       // Check if user is logged in
       if (!userController.isLoggedIn) {
-        Get.snackbar('Error', 'Please login first');
+        SnackbarUtils.showError('Erreur', 'Veuillez vous connecter d\'abord');
         return;
       }
 
       // Check if user has required role
       if (!userController.userRole.contains('ROLE_ADMIN') && !userController.userRole.contains('ROLE_TECHNICIAN')) {
-        Get.snackbar('Error', 'You need to be logged in as Admin or Technician to access locations');
+        SnackbarUtils.showError('Erreur', 'Vous devez être connecté en tant qu\'Admin ou Technicien pour accéder aux localisations');
         return;
       }
+
 
       // Load all SACs
       final sacs = await _locationService.getAllLocations();
@@ -199,11 +205,12 @@ class AddPartController extends GetxController {
       availableLocations.assignAll(available);
     } catch (e) {
       print('Error loading locations: $e');
-      Get.snackbar('Error', 'Failed to load locations from database. Please check your connection and try again.');
+      SnackbarUtils.showError('Erreur', 'Échec du chargement des localisations depuis la base de données. Veuillez vérifier votre connexion et réessayer.');
       // Don't show dummy data, let it show "No locations available"
     } finally {
       isLoadingLocations.value = false;
     }
+
   }
 
   void onCancelPressed() {

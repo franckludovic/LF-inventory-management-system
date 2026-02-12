@@ -264,13 +264,26 @@ class AddPartScreen extends GetView<AddPartController> {
                         elevation: 0,
                       ),
                       child: controller.isLoading.value
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
+                          ? const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Text(
+                                  'Enregistrement...',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             )
                           : Text(
                               AppStrings.savePart,
@@ -279,6 +292,7 @@ class AddPartScreen extends GetView<AddPartController> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+
                     );
                   }),
                 ),

@@ -268,10 +268,21 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: controller.exportPDF,
-                          icon: const Icon(Icons.picture_as_pdf, size: 20),
-                          label: Text(AppStrings.exportPDF),
+                        child: Obx(() => OutlinedButton.icon(
+                          onPressed: controller.isLoading.value ? null : controller.exportPDF,
+                          icon: controller.isLoading.value
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                                  ),
+                                )
+                              : const Icon(Icons.picture_as_pdf, size: 20),
+                          label: Text(
+                            controller.isLoading.value ? 'Génération du PDF...' : AppStrings.exportPDF,
+                          ),
                           style: OutlinedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             side: BorderSide(
@@ -279,9 +290,8 @@ class ReportDetailsScreen extends GetView<ReportDetailsController> {
                             ),
                             foregroundColor: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
                           ),
-                        ),
+                        )),
                       ),
-
                     ],
                   ),
                 ],

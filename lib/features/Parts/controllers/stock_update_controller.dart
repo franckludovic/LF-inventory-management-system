@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/models/part_model.dart';
+import '../../../core/utils/snackbar_utils.dart';
 import '../services/parts_service.dart';
 import '../../../core/controllers/user_controller.dart';
 import '../../../core/constants/strings.dart';
+
 
 class StockUpdateController extends GetxController {
   final PartModel? initialPart;
@@ -59,17 +61,17 @@ class StockUpdateController extends GetxController {
 
   Future<void> confirmChange() async {
     if (selectedPart.value == null) {
-      Get.snackbar('Error', 'Please select a part first');
+      SnackbarUtils.showError('Erreur', 'Veuillez sélectionner une pièce d\'abord');
       return;
     }
 
     if (selectedLocation.value.isEmpty) {
-      Get.snackbar('Error', 'Please select a location');
+      SnackbarUtils.showError('Erreur', 'Veuillez sélectionner une localisation');
       return;
     }
 
     if (quantity.value <= 0) {
-      Get.snackbar('Error', 'Quantity must be greater than 0');
+      SnackbarUtils.showError('Erreur', 'La quantité doit être supérieure à 0');
       return;
     }
 
@@ -89,15 +91,16 @@ class StockUpdateController extends GetxController {
             : null,
       );
 
-      Get.snackbar('Success', 'Stock updated successfully');
+      SnackbarUtils.showSuccess('Succès', 'Stock mis à jour avec succès');
       // Stay on the page instead of navigating away
     } catch (e) {
       final errorMessage = e.toString();
-      Get.snackbar('Error', 'Failed to update stock: $errorMessage');
+      SnackbarUtils.showError('Erreur', 'Échec de la mise à jour du stock: $errorMessage');
     } finally {
       isLoading.value = false;
     }
   }
+
 
   @override
   void onClose() {

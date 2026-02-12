@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/strings.dart';
-
+import '../../../../core/utils/snackbar_utils.dart';
 import '../../../../core/controllers/navigation_controller.dart';
 import '../services/report_export_service.dart';
+
 
 
 class ReportDetailsController extends GetxController {
@@ -14,9 +15,11 @@ class ReportDetailsController extends GetxController {
   final totalRecords = 0.obs;
 
   final activities = <Map<String, dynamic>>[].obs;
+  final isLoading = false.obs;
 
   // ─────────────────── Services ───────────────────
   final ReportExportService _exportService = ReportExportService();
+
 
   // ─────────────────── Lifecycle ───────────────────
   @override
@@ -96,6 +99,8 @@ class ReportDetailsController extends GetxController {
 
   // ─────────────────── Actions ───────────────────
   Future<void> exportPDF() async {
+    isLoading.value = true;
+
     try {
       final success = await _exportService.exportPDF(
         activities: activities,
@@ -105,14 +110,17 @@ class ReportDetailsController extends GetxController {
       );
 
       if (success) {
-        Get.snackbar('Success', AppStrings.exportPDFSuccess);
+        SnackbarUtils.showSuccess('Succès', AppStrings.exportPDFSuccess);
       } else {
-        Get.snackbar('Info', 'PDF export cancelled or failed');
+        SnackbarUtils.showWarning('Information', 'Export PDF annulé ou échoué');
       }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to export PDF: ${e.toString()}');
+      SnackbarUtils.showError('Erreur', 'Échec de l\'export PDF: ${e.toString()}');
+    } finally {
+      isLoading.value = false;
     }
   }
+
 
   void backToDashboard() {
 
